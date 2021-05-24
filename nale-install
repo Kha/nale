@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -euo pipefail
+
+main() {
+  # download static Nix/nix-portable...
+  # macOS: ask user to install global Nix first :(
+  # bonus points: when interactive installation shell is closed, ask if user wants to permanently install Nale, otherwise remove ~/.nale again
+}
+
+main "$@" || exit 1

@@ -1,0 +1,73 @@
+#!/bin/sh
+
+set -euo pipefail
+
+local nale_root="$(dirname "$0")"
+local nix="nix"
+if [ -f "$nale_root/nix-portable" ]; then
+    nix="$nale_root/nix-portable"
+fi
+
+err() {
+    echo "$@" 1>&2
+    exit 1
+}
+
+usage() {
+    cat 1<&2 <<EOF
+nale 0.0.1
+A wrapper around Nix for installing and using the Lean 4 theorem prover and programming language
+
+USAGE:
+    nale build      Build current/given package
+    nale run        Run executable of current/given package
+    nale update     Check for updates of `nale`
+    nale nix        Run arbitrary commands of the underlying `nix` executable
+EOF
+}
+
+find_pkg_root() {
+    PKG_ROOT="."
+    if [ "$1" -ne "-*" ]; then
+        PKG_ROOT="$1"
+        shift
+    fi
+    local pkg_root_start="$PKG_ROOT"
+    while [ "$PKG_ROOT" -ne / ]; do
+        [ -f "$PKG_ROOT/flake.nix" || -f "$PKG_ROOT/leanpkg.toml" ] && break
+        PKG_ROOT="$(realpath "$PKG_ROOT/..")"
+    done
+}
+
+need_pkg_root() {
+    [ "$PKG_ROOT" -ne / ] || err "Could not find Lean package (a directory containing `flake.nix` or `leanpkg.toml`) containing `$pkg_root_start`."
+}
+
+run_nix() {
+    if [ "${PKG_ROOT+x}" -a -f "$PKG_ROOT/"]
+}
+
+build() {
+    shift
+    find_pkg_root
+    [ "$#" -eq 0 ] || err "Unexpected argument
+
+nale build [pkg]
+
+Build package in given directory (or else `.`).
+"
+    run_nix build "$PKG" --no-out-link
+}
+
+run() {
+    shift
+    find_pkg_root
+    [ "$#" -eq 0 ] || err "Unexpected argument
+
+nale run [pkg]
+
+Run executable of package in given directory (or else `.`).
+Same as `nale nix run pkg#executable`.
+"
+    run_nix run "$PKG#executable"
+}
