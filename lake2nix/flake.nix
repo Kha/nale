@@ -66,8 +66,6 @@
       lib.lakeRepo2flake = src:
         flake-utils.lib.eachDefaultSystem (system: rec {
           packages = outs.packages.${system}.lakeRepo2pkg src;
-          # obsolete
-          defaultPackage = packages.default;
         });
     };
 }
