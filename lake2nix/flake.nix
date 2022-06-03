@@ -1,7 +1,7 @@
 {
   description = "Convert Lean projects using Lake to Nix derivations";
 
-  inputs.lean.url = github:leanprover/lean4;
+  inputs.lean.url = github:Kha/lean4/nix-lake;
   inputs.lake.url = github:leanprover/lake;
   inputs.lake.inputs.lean.follows = "lean";
   inputs.lake.inputs.flake-utils.follows = "lean/flake-utils";
@@ -26,8 +26,8 @@
         lake-export = writeShellScriptBin "lake-export" ''
           LEAN_PATH=${Lake.modRoot} exec ${LakeExport.executable}/bin/lakeexport "$@"
         '';
-        lake2pkg = config: deps: src: let
-          pkg = leanPkgs.buildLeanPackage {
+        lake2pkg = { config, deps, src, lean }: let
+          pkg = (leanPkgs.buildLeanPackage.override { inherit lean; }) {
             inherit (config) name libName binName binRoot;
             inherit deps;
             src = "${src}/${config.srcDir}";
@@ -47,25 +47,25 @@
               bin = pkg.executable;
               staticLib = pkg.staticLib;
               sharedLib = pkg.sharedLib;
-              oleans = {};
+              oleans = pkg.modRoot;
             }."${config.defaultFacet}";
           };
-        lakeRepo2pkg = src: let
+        lakeRepo2pkg = { src, leanPkgs ? leanPkgs }: let
           json = runCommandNoCC "${src}-config" {} ''
             ${lake-export}/bin/lake-export ${src} > $out
           '';
           config = builtins.fromJSON (builtins.readFile json);
         in
-          lake2pkg config leanPkgs.stdlib src;
+          lake2pkg { inherit config src; inherit (leanPkgs) lean; deps = leanPkgs.stdlib; };
       };
 
       defaultPackage = packages.lake-export;
     });
   in
     outs // {
-      lib.lakeRepo2flake = src:
+      lib.lakeRepo2flake = cfg:
         flake-utils.lib.eachDefaultSystem (system: rec {
-          packages = outs.packages.${system}.lakeRepo2pkg src;
+          packages = outs.packages.${system}.lakeRepo2pkg (cfg // (if cfg ? leanPkgs then { leanPkgs = cfg.leanPkgs.${system}; } else {}));
         });
     };
 }
