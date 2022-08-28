@@ -52,8 +52,10 @@ def main (args : List String) : IO UInt32 := do
         packageFacetConfigs := initPackageFacetConfigs
         libraryFacetConfigs := initLibraryFacetConfigs
       }
-      let root ← root.resolveDeps config.updateDeps
-      {ws with root}.finalize
+      ws.finalize
+      -- avoid manifest write
+      --let root ← root.resolveDeps config.updateDeps
+      --{ws with root}.finalize
     -- remove forbidden /nix/store references
     let undir pkg := { pkg with dir := "" }
     let ws := { ws with root := undir ws.root, packageMap := ws.packageMap.fold (init := {}) (·.insert · <| undir ·) }
