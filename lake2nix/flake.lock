@@ -2,6 +2,20 @@
   "nodes": {
     "flake-utils": {
       "locked": {
+        "lastModified": 1659877975,
+        "narHash": "sha256-zllb8aq3YO3h8B/U0/J1WBgAL8EX5yWf5pMj3G0NAmc=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "c0e246b9b83f637f4681389ecabcb2681b4f3af0",
+        "type": "github"
+      },
+      "original": {
+        "id": "flake-utils",
+        "type": "indirect"
+      }
+    },
+    "flake-utils_2": {
+      "locked": {
         "lastModified": 1656928814,
         "narHash": "sha256-RIFfgBuKz6Hp89yRr7+NR5tzIAbn52h8vT6vXkYjZoM=",
         "owner": "numtide",
@@ -30,34 +44,33 @@
         ]
       },
       "locked": {
-        "lastModified": 1659882629,
-        "narHash": "sha256-5UuGyoQA5vRitnvwjW/01fhOgjQPMfYJfM+yXy/xWuw=",
+        "lastModified": 1659996205,
+        "narHash": "sha256-2DBgt7ixAOedGt0sY5XpRoE8Pbx9IvHvs3Evbg7CyTA=",
         "owner": "leanprover",
         "repo": "lake",
-        "rev": "6cfb4e3fd7ff700ace8c2cfdb85056d59f321920",
+        "rev": "6db611df8a814d6a9f8962205384b1659791354a",
         "type": "github"
       },
       "original": {
         "owner": "leanprover",
         "repo": "lake",
-        "rev": "6cfb4e3fd7ff700ace8c2cfdb85056d59f321920",
         "type": "github"
       }
     },
     "lean": {
       "inputs": {
-        "flake-utils": "flake-utils",
+        "flake-utils": "flake-utils_2",
         "lean-stage0": "lean-stage0",
         "lean4-mode": "lean4-mode",
         "nix": "nix",
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1659960974,
-        "narHash": "sha256-A3ipcay4Wc7Kbt/REilecb9cEBkIw0+x5KZRraZkfEE=",
+        "lastModified": 1661702135,
+        "narHash": "sha256-9Y1CcT0naDFa3HKUTavOylRPJeJpQPmP/nac+Bs91uc=",
         "owner": "leanprover",
         "repo": "lean4",
-        "rev": "860d726d726ebd30a95ff95d192bb8a2fe55e30c",
+        "rev": "e80028b7d1be11b190e5439fab33f9a034f6babf",
         "type": "github"
       },
       "original": {
@@ -183,10 +196,7 @@
     },
     "root": {
       "inputs": {
-        "flake-utils": [
-          "lean",
-          "flake-utils"
-        ],
+        "flake-utils": "flake-utils",
         "lake": "lake",
         "lean": "lean"
       }

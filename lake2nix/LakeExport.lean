@@ -34,7 +34,26 @@ def main (args : List String) : IO UInt32 := do
   initSearchPath "."
   let (leanInstall?, lakeInstall?) ← findInstall?
   (MainM.runLogIO do
-    let ws ← loadWorkspace.{0} { env := (← Env.compute lakeInstall?.get! leanInstall?.get!), rootDir := args[0]! }
+    let config := { env := (← Env.compute lakeInstall?.get! leanInstall?.get!), rootDir := args[0]! : LoadConfig.{0} }
+    --let ws ← loadWorkspace.{0} config
+    -- same as `loadWorkspace`, but without invoking `git`
+    let ws ← do
+      Lean.searchPathRef.set config.env.leanSearchPath
+      let configEnv ← elabConfigFile config.rootDir config.configOpts config.leanOpts config.configFile
+      let pkgConfig ← IO.ofExcept <| PackageConfig.loadFromEnv configEnv config.leanOpts
+      let repo := GitRepo.mk config.rootDir
+      let root : Package := {
+        configEnv, leanOpts := config.leanOpts
+        dir := config.rootDir, config := pkgConfig
+      }
+      let ws : Workspace := {
+        root, lakeEnv := config.env
+        moduleFacetConfigs := initModuleFacetConfigs
+        packageFacetConfigs := initPackageFacetConfigs
+        libraryFacetConfigs := initLibraryFacetConfigs
+      }
+      let root ← root.resolveDeps config.updateDeps
+      {ws with root}.finalize
     -- remove forbidden /nix/store references
     let undir pkg := { pkg with dir := "" }
     let ws := { ws with root := undir ws.root, packageMap := ws.packageMap.fold (init := {}) (·.insert · <| undir ·) }
