@@ -21,7 +21,7 @@
           dontInstall = true;
         };
         nix-nale = writeShellScriptBin "nix" ''
-          ''${NALE_NIX:-${nix}/bin/nix} --experimental-features 'nix-command flakes' --extra-plugin-files ${nale-plugin}/nale.so --extra-substituters https://lean4.cachix.org/ --option warn-dirty false "$@"
+          NALE_NIX_SELF=$BASH_SOURCE ''${NALE_NIX_PREFIX:-} ''${NALE_NIX:-${nix}/bin/nix} --extra-plugin-files ${nale-plugin}/nale.so --experimental-features 'nix-command flakes' --extra-substituters https://lean4.cachix.org/ --option warn-dirty false "$@"
         '';
       };
     });
