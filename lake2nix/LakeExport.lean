@@ -4,18 +4,18 @@ open Lake
 open Lean
 
 instance [ToJson α] : ToJson (NameMap α) where
-  toJson nm := Json.obj <| nm.fold (init := Std.RBNode.leaf) (fun n k v => n.insert compare k.toString (toJson v))
+  toJson nm := Json.obj <| nm.fold (init := RBNode.leaf) (fun n k v => n.insert compare k.toString (toJson v))
 
 deriving instance ToJson for Source
 deriving instance ToJson for Dependency
 instance : ToJson Glob where
   toJson
-    | Glob.one n => Json.obj (Std.RBNode.singleton "mod" (toJson n) |>.insert compare "glob" "one")
-    | Glob.submodules n => Json.obj (Std.RBNode.singleton "mod" (toJson n) |>.insert compare "glob" "submodules")
-    | Glob.andSubmodules n => Json.obj (Std.RBNode.singleton "mod" (toJson n) |>.insert compare "glob" "andSubmodules")
+    | Glob.one n => Json.obj (RBNode.singleton "mod" (toJson n) |>.insert compare "glob" "one")
+    | Glob.submodules n => Json.obj (RBNode.singleton "mod" (toJson n) |>.insert compare "glob" "submodules")
+    | Glob.andSubmodules n => Json.obj (RBNode.singleton "mod" (toJson n) |>.insert compare "glob" "andSubmodules")
 instance : ToJson Script := ⟨fun _ => Json.str "unimplemented"⟩
 instance [ToJson α] : ToJson (NameMap α) where
-  toJson m := Json.obj <| m.fold (init := Std.RBNode.leaf) fun m k v =>
+  toJson m := Json.obj <| m.fold (init := RBNode.leaf) fun m k v =>
     m.insert compare k.toString (toJson v)
 deriving instance ToJson for BuildType
 deriving instance ToJson for PackageConfig
