@@ -60,36 +60,21 @@
     "lean": {
       "inputs": {
         "flake-utils": "flake-utils_2",
-        "lean-stage0": "lean-stage0",
         "lean4-mode": "lean4-mode",
         "nix": "nix",
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1668180244,
-        "narHash": "sha256-J+kyTH1x2Mj7uHsFIQ6jCwK8rgJoXfa1BFeSo1gDQRc=",
-        "owner": "leanprover",
+        "lastModified": 1669564730,
+        "narHash": "sha256-JnYMk2JWY80KF/LZC6t6ivgeIUXr/ZqUAgxcQVJpqiA=",
+        "owner": "Kha",
         "repo": "lean4",
-        "rev": "bcd1673231ea4b2f6761bf272e2a186467fc060a",
+        "rev": "d780ed12b391baa3823afee9f79217becef684aa",
         "type": "github"
       },
       "original": {
-        "owner": "leanprover",
-        "repo": "lean4",
-        "type": "github"
-      }
-    },
-    "lean-stage0": {
-      "locked": {
-        "lastModified": 0,
-        "narHash": "sha256-3K/43lSW4WIHNG+HHVKCD1odS63mHuaQ4ueHyTIkcls=",
-        "owner": "leanprover",
-        "repo": "lean4",
-        "rev": "0000000000000000000000000000000000000000",
-        "type": "github"
-      },
-      "original": {
-        "owner": "leanprover",
+        "owner": "Kha",
+        "ref": "nale",
         "repo": "lean4",
         "type": "github"
       }

@@ -11,35 +11,90 @@
 #include <nix/store-api.hh>
 #include <nix/globals.hh>
 #include <nix/cache.hh>
+#include <nix/fs-input-accessor.hh>
 #include <nlohmann/json.hpp>
 
 namespace nix::fetchers {
 
-struct NaleInputScheme : InputScheme
+std::string naleVersion = "nale-v1";
+
+struct OverlayAccessor : InputAccessor
 {
-    std::optional<Input> inputFromURL(const ParsedURL & url) override
+    ref<InputAccessor> first;
+    ref<InputAccessor> second;
+
+    OverlayAccessor(ref<InputAccessor> first, ref<InputAccessor> second)
+        : first(first)
+        , second(second)
     {
-        auto url2(url);
-        if (hasPrefix(url2.scheme, "nale+"))
-            url2.scheme = std::string(url2.scheme, 5);
-        else
-            return {};
-
-        auto input = Input::fromURL(url2);
-        input.attrs["nested_type"] = input.attrs["type"];
-        input.attrs["type"] = "nale";
-
-        return input;
     }
 
-    Attrs unwrapAttrs(const Attrs & _attrs) {
-        Attrs attrs(_attrs);
+    std::string readFile(const CanonPath & path) override
+    {
+        return first->pathExists(path) ? first->readFile(path) : second->readFile(path);
+    }
+
+    bool pathExists(const CanonPath & path) override
+    {
+        return first->pathExists(path) || second->pathExists(path);
+    }
+
+    Stat lstat(const CanonPath & path) override
+    {
+        return first->pathExists(path) ? first->lstat(path) : second->lstat(path);
+    }
+
+    DirEntries readDirectory(const CanonPath & path) override
+    {
+        DirEntries entries;
+        if (second->pathExists(path))
+            entries = second->readDirectory(path);
+        if (first->pathExists(path))
+            for (auto const & e : first->readDirectory(path))
+                entries[e.first] = e.second;
+        return entries;
+    }
+
+    std::string readLink(const CanonPath & path) override
+    {
+        return first->pathExists(path) ? first->readLink(path) : second->readLink(path);
+    }
+
+    std::string showPath(const CanonPath & path) override
+    {
+        return first->pathExists(path) ? first->showPath(path) : second->showPath(path);
+    }
+};
+
+struct NaleInputScheme : InputScheme
+{
+    static Attrs wrapAttrs(Attrs attrs) {
+        attrs["nested_type"] = attrs["type"];
+        attrs["type"] = "nale";
+        return attrs;
+    }
+
+    static Attrs unwrapAttrs(Attrs attrs) {
         attrs["type"] = attrs["nested_type"];
         attrs.erase("nested_type");
         return attrs;
     }
 
-    std::optional<Input> inputFromAttrs(const Attrs & attrs) override
+    std::optional<Input> inputFromURL(const ParsedURL & url) const override
+    {
+        auto url2(url);
+        if (hasPrefix(url2.scheme, "nale+"))
+            url2 = parseURL(std::string(url2.to_string(), 5));
+        else
+            return {};
+
+        auto input = Input::fromURL(url2);
+        input.attrs = wrapAttrs(input.attrs);
+
+        return input;
+    }
+
+    std::optional<Input> inputFromAttrs(const Attrs & attrs) const override
     {
         if (maybeGetStrAttr(attrs, "type") != "nale") return {};
 
@@ -48,93 +103,80 @@ struct NaleInputScheme : InputScheme
         //        throw Error("unsupported Nale input attribute '%s'", name);
 
         Input input = Input::fromAttrs(unwrapAttrs(attrs));
+        input.attrs = wrapAttrs(input.attrs);
 
-        Input input2;
-        input2.attrs = attrs;
         return input;
     }
 
-    ParsedURL toURL(const Input & input) override
+    ParsedURL toURL(const Input & input) const override
     {
         auto url = Input::fromAttrs(unwrapAttrs(input.attrs)).toURL();
-        url.scheme = "nale+" + url.scheme;
-        return url;
-    }
-
-    bool hasAllInfo(const Input & input) override
-    {
-        auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
-        return nested.hasAllInfo();
+        return parseURL("nale+" + url.to_string());
     }
 
     Input applyOverrides(
         const Input & input,
         std::optional<std::string> ref,
-        std::optional<Hash> rev) override
+        std::optional<Hash> rev) const override
     {
         auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
         Input input2 = nested.applyOverrides(ref, rev);
-        input2.attrs["nested_type"] = input2.attrs["type"];
-        input2.attrs["type"] = "nale";
-
+        input2.attrs = wrapAttrs(input2.attrs);
         return input2;
     }
 
-    void clone(const Input & input, const Path & destDir) override
+    void clone(const Input & input, const Path & destDir) const override
     {
         auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
         // TODO: patch here as well?
         nested.clone(destDir);
     }
 
-    std::optional<Path> getSourcePath(const Input & input) override
+    bool isLocked(const Input & input) const override
     {
         auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
-        return nested.getSourcePath();
+        return nested.isLocked();
     }
 
-    void markChangedFile(const Input & input, std::string_view file, std::optional<std::string> commitMsg) override
+    std::optional<std::string> isRelative(const Input & input) const override
     {
         auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
-        nested.markChangedFile(file, commitMsg);
+        return nested.isRelative();
     }
 
-    std::pair<nix::StorePath, Input> fetch(ref<Store> store, const Input & input) override
+    std::optional<std::string> getFingerprint(ref<Store> store, const Input & input) const override
     {
         auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
+        auto f = nested.getFingerprint(store);
+        return f ? std::optional<std::string>(*f + getEnv("NALE_LAKE2NIX").value()) : std::nullopt;
+    }
 
+    nix::StorePath mkFlakeFiles(ref<Store> store, InputAccessor & acc) const
+    {
+        auto manifest = acc.pathExists(CanonPath("/lake-manifest.json")) ? acc.readFile(CanonPath("/lake-manifest.json")) : "";
+        auto lakefile = acc.readFile(CanonPath("/lakefile.lean"));
+        auto leanVersion = chomp(acc.readFile(CanonPath("/lean-toolchain")));
         Attrs lockedAttrs;
-        if (maybeGetStrAttr(nested.attrs, "type") == "github") {
-            auto rev = input.getRev();
-            //if (!rev) rev = nested.getRevFromRef(store, input);
-            if (rev) {
+        lockedAttrs["manifest"] = manifest;
+        lockedAttrs["lakefile"] = lakefile;
+        lockedAttrs["leanVersion"] = leanVersion;
+        lockedAttrs["naleVersion"] = naleVersion;
+        lockedAttrs["lake2nixVersion"] = getEnv("NALE_LAKE2NIX").value();
 
-            lockedAttrs = Attrs({
-                {"type", "nale-git-tarball"},
-                {"rev", rev->gitRev()},
-            });
-
-            if (auto res = getCache()->lookup(store, lockedAttrs)) {
-                //input.attrs.insert_or_assign("lastModified", getIntAttr(res->first, "lastModified"));
-                return {std::move(res->second), input};
-            }
-            }
-        }
-
-        auto [tree, input2] = nested.fetch(store);
+        if (auto res = getCache()->lookup(store, lockedAttrs))
+            return std::move(res->second);
 
         Path tmpDir = createTempDir();
         AutoDelete delTmpDir(tmpDir, true);
 
-        runProgram2({ .program = "cp", .searchPath = true, .args = { "-r", tree.actualPath + "/.", tmpDir } });
-        //copyPath(tree.actualPath, tmpDir);
-        //std::filesystem::remove(tmpDir);
-        //std::filesystem::copy(tree.actualPath, tmpDir, std::filesystem::copy_options::recursive);
+        {
+            std::ofstream s(tmpDir + "/lakefile.lean");
+            s << lakefile;
+        }
 
         if (chmod(tmpDir.c_str(), 0777) == -1)
             throw SysError("changing permissions on '%1%'", tmpDir);
 
-        auto leanVersion = chomp(readFile(tmpDir + "/lean-toolchain"));
         auto nightlySpec = ":nightly";
         auto off = leanVersion.find(nightlySpec);
         if (off != std::string::npos) {
@@ -147,10 +189,12 @@ struct NaleInputScheme : InputScheme
         }
         std::string depInputs = "";
         std::string deps = "";
-        std::ifstream manifestStream((tmpDir + "/lean_packages/manifest.json").c_str());
-        if (manifestStream) {
-            auto manifest = nlohmann::json::parse(manifestStream);
-            for (auto pkg : manifest["packages"]) {
+        if (manifest.size()) {
+            auto json = nlohmann::json::parse(manifest);
+            for (auto pkg : json["packages"]) {
+                if (!pkg.contains("git"))
+                    throw Error("unhandled input scheme '%s'", *pkg.begin());
+                pkg = pkg["git"];
                 std::string name = pkg["name"];
                 std::string rev = pkg["rev"];
                 std::string url = "git:";
@@ -161,16 +205,16 @@ struct NaleInputScheme : InputScheme
                 }
                 depInputs += (format("  inputs.%1%.url = nale+%2%/%3%;\n  inputs.%1%.inputs.lean.follows = \"lean\";\n") %
                     name % url % rev).str();
-                deps += (format("inputs.%1%") % name).str();
+                deps += (format("inputs.%1% ") % name).str();
             }
         }
         auto flakeContents = format(R"({
   inputs.lean.url = github:%1%;
-  inputs.lake2nix.url = @lake2nix-url@;
+  inputs.lake2nix.url = %2%;
     #inputs.lake2nix.inputs.lean.follows = "lean";
-%2%
-  outputs = inputs: inputs.lake2nix.lib.lakeRepo2flake { src = ./.; leanPkgs = inputs.lean.packages; deps = [ %3% ]; };
-})") % leanVersion % depInputs % deps;
+%3%
+  outputs = inputs: inputs.lake2nix.lib.lakeRepo2flake { src = ./.; leanPkgs = inputs.lean.packages; depFlakes = [ %4% ]; };
+})") % leanVersion % getEnv("NALE_LAKE2NIX").value() % depInputs % deps;
         writeFile(tmpDir + "/flake.nix", flakeContents.str());
         // creating new EvalState segfaults?
         //auto state = std::shared_ptr<EvalState>(new EvalState({}, store));
@@ -178,21 +222,25 @@ struct NaleInputScheme : InputScheme
         runProgram(getEnv("NALE_NIX_SELF").value_or("nix"), false, {"--quiet", "flake", "lock", tmpDir});
 
         auto storePath = store->addToStore("source.nale", tmpDir, FileIngestionMethod::Recursive, htSHA256, defaultPathFilter);
-        input2.attrs["nested_type"] = input2.attrs["type"];
-        input2.attrs["type"] = "nale";
-        input2.attrs.erase("narHash");
+        getCache()->add(
+            store,
+            lockedAttrs,
+            {},
+            storePath,
+            true);
 
-        if (maybeGetStrAttr(nested.attrs, "type") == "github") {
-            getCache()->add(
-                store,
-                lockedAttrs,
-                {},
-                tree.storePath,
-                true);
-        }
 
-        return std::make_pair(storePath, input2);
-    };
+        return storePath;
+    }
+
+    std::pair<ref<InputAccessor>, Input> getAccessor(ref<Store> store, const Input & input) const override
+    {
+        auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
+        auto [acc, input2] = nested.getAccessor(store);
+        auto flakeFiles = mkFlakeFiles(store, *acc);
+        input2.attrs = wrapAttrs(input2.attrs);
+        return {make_ref<OverlayAccessor>(makeStorePathAccessor(store, flakeFiles), acc), input2};
+    }
 };
 
 static auto rNaleInputScheme = OnStartup([] { registerInputScheme(std::make_unique<NaleInputScheme>()); });
