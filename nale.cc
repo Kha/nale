@@ -10,6 +10,7 @@
 #include <nix/archive.hh>
 #include <nix/store-api.hh>
 #include <nix/globals.hh>
+#include <nix/cache.hh>
 #include <nlohmann/json.hpp>
 
 namespace nix::fetchers {
@@ -101,6 +102,25 @@ struct NaleInputScheme : InputScheme
     std::pair<nix::StorePath, Input> fetch(ref<Store> store, const Input & input) override
     {
         auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
+
+        Attrs lockedAttrs;
+        if (maybeGetStrAttr(nested.attrs, "type") == "github") {
+            auto rev = input.getRev();
+            //if (!rev) rev = nested.getRevFromRef(store, input);
+            if (rev) {
+
+            lockedAttrs = Attrs({
+                {"type", "nale-git-tarball"},
+                {"rev", rev->gitRev()},
+            });
+
+            if (auto res = getCache()->lookup(store, lockedAttrs)) {
+                //input.attrs.insert_or_assign("lastModified", getIntAttr(res->first, "lastModified"));
+                return {std::move(res->second), input};
+            }
+            }
+        }
+
         auto [tree, input2] = nested.fetch(store);
 
         Path tmpDir = createTempDir();
@@ -161,6 +181,16 @@ struct NaleInputScheme : InputScheme
         input2.attrs["nested_type"] = input2.attrs["type"];
         input2.attrs["type"] = "nale";
         input2.attrs.erase("narHash");
+
+        if (maybeGetStrAttr(nested.attrs, "type") == "github") {
+            getCache()->add(
+                store,
+                lockedAttrs,
+                {},
+                tree.storePath,
+                true);
+        }
+
         return std::make_pair(storePath, input2);
     };
 };
