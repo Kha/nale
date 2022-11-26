@@ -6,9 +6,9 @@
   inputs.nix.url = github:Kha/nix/nested-follows2;
 
   outputs = inputs:
-    inputs.flake-utils.lib.eachDefaultSystem (system: with inputs.nixpkgs.legacyPackages.${system}; let
-      nix = inputs.nix.packages.${system}.nix; in {
+    inputs.flake-utils.lib.eachDefaultSystem (system: with inputs.nixpkgs.legacyPackages.${system}; {
       packages = rec {
+        nix = (pkg: pkg.overrideAttrs (_: { stdenv = stdenvAdapters.keepDebugInfo pkg.stdenv; })) inputs.nix.packages.${system}.nix;
         nale-plugin = stdenv.mkDerivation {
           name ="nale-plugin";
           src = builtins.path { name = "nale.cc"; path = ./.; filter = p: _: p == toString ./nale.cc; };
@@ -16,7 +16,7 @@
           buildPhase = ''
             mkdir $out
             substituteInPlace nale.cc --replace '@lake2nix-url@' 'path:${./lake2nix}'
-            c++ -shared -o $out/nale.so nale.cc -std=c++17 -I ${nix.dev}/include/nix
+            c++ -shared -o $out/nale.so nale.cc -std=c++17 -I ${nix.dev}/include/nix -O0 -g
           '';
           dontInstall = true;
         };
