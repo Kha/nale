@@ -22,8 +22,9 @@
           dontInstall = true;
         };
         nix-nale = writeShellScriptBin "nix" ''
-          NALE_NIX_SELF=$BASH_SOURCE NALE_LAKE2NIX=path:${inputs.lake2nix}?narHash=${inputs.lake2nix.narHash} ''${NALE_NIX_PREFIX:-} ''${NALE_NIX:-${nix}/bin/nix} --extra-plugin-files ${nale-plugin}/nale.so --experimental-features 'nix-command flakes' --extra-substituters https://lean4.cachix.org/ --option warn-dirty false "$@"
+          NALE_NIX_SELF=$BASH_SOURCE NALE_LAKE2NIX='github:Kha/nale/da62861b59586b56fc5c00df7b7a67b5c8023b0b?dir=lake2nix' ''${NALE_NIX_PREFIX:-} ''${NALE_NIX:-${nix}/bin/nix} --extra-plugin-files ${nale-plugin}/nale.so --experimental-features 'nix-command flakes' --extra-substituters https://lean4.cachix.org/ --option warn-dirty false "$@"
         '';
+        inherit (inputs.lake2nix.packages.${system}) ciShell;
       };
     });
 }

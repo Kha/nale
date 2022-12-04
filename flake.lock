@@ -75,23 +75,6 @@
         "type": "github"
       }
     },
-    "lake2nix": {
-      "inputs": {
-        "flake-utils": "flake-utils_2",
-        "lake": "lake",
-        "lean": "lean"
-      },
-      "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-q13DFZPwcvozhjF+VNY/OQxDJIl/GCaD5lSMCBqvKNE=",
-        "path": "./lake2nix",
-        "type": "path"
-      },
-      "original": {
-        "path": "./lake2nix",
-        "type": "path"
-      }
-    },
     "lean": {
       "inputs": {
         "flake-utils": "flake-utils_3",
@@ -302,7 +285,6 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "lake2nix": "lake2nix",
         "nix": "nix_2",
         "nixpkgs": "nixpkgs_4"
       }

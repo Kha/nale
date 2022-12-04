@@ -21,7 +21,7 @@
       };
     in rec {
       packages = LakeExport // rec {
-        inherit (leanPkgs) lean;
+        inherit (leanPkgs) lean ciShell;
         lake-export = writeShellScriptBin "lake-export" ''
           LEAN_PATH=${Lake.modRoot} exec ${LakeExport.executable}/bin/lakeexport "$@"
         '';
