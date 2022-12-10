@@ -9,8 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      nix-nale: ${{ steps.build.outputs.nix-nale }}
     steps:
     - uses: actions/checkout@v3
     - name: Setup Nix Cache
@@ -39,36 +37,39 @@ jobs:
       id: build
       run: |
         nix flake lock --update-input lake2nix  # HACK
-        nix build .#nix-nale ./lake2nix -Lv
-        echo "nix-nale=$(nix path-info .#nix-nale)" >> $GITHUB_OUTPUT
+        nix build ./lake2nix -Lvo push
+        nix build . -Lv
       shell: nix run .#ciShell -- bash -euxo pipefail {0}
     - name: Push to Cachix
       run: |
-        [ -z "${{ secrets.CACHIX_AUTH_TOKEN }}" ] || cachix push -j4 lean4 ./result* || true
+        [ -z "${{ secrets.CACHIX_AUTH_TOKEN }}" ] || cachix push -j4 lean4 ./push* || true
     - name: Rebuild Nix Store Cache
       run: |
         rm -rf nix-store-cache || true
-        nix copy ./result* --to file://$PWD/nix-store-cache?compression=none
+        nix copy ./push* ./result ./lake2nix#oTree --to file://$PWD/nix-store-cache?compression=none
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: nale
+        path: result/bin
 
   bench:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: cachix/install-nix-action@v18
+      - uses: actions/download-artifact@v3
         with:
-          # https://github.com/NixOS/nix/issues/6572
-          install_url: https://releases.nixos.org/nix/nix-2.7.0/install
-          extra_nix_config: |
-            extra-substituters = https://lean4.cachix.org/
-            extra-trusted-public-keys = lean4.cachix.org-1:mawtxSxcaiWE24xCXXgh3qnvlTkyU7evRRnGeAhD4Wk=
+          path: nale
       - name: Bench
         run: |
-          nix build ${{ needs.build.outputs.nix-nale }} --store https://lean4.cachix.org/ -o nix-nale
-          \time -f '%e %M' ./nix-nale/bin/nix -v -- build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
-          \time -f '%e %M' ./nix-nale/bin/nix -- build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
-          \time -f '%e %M' ./nix-nale/bin/nix -- flake clone nale+github:leanprover-community/mathlib4/5f78e345 --dest mathlib4
+          ln -s nale/nale/nix-portable ./nix
+          chmod u+x ./nix
+          export PATH=.:$PATH
+          \time -f '%e %M' nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
+          \time -f '%e %M' nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
+          \time -f '%e %M' nix flake clone nale+github:leanprover-community/mathlib4/5f78e345 --dest mathlib4
           cd mathlib4
           git checkout 5f78e345  # TODO: should be implied by above
-          \time -f '%e %M' ./nix-nale/bin/nix -- build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
+          \time -f '%e %M' nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
           echo >> README.md
-          \time -f '%e %M' ./nix-nale/bin/nix -- build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
+          \time -f '%e %M' nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v

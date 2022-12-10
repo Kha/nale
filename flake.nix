@@ -2,8 +2,11 @@
   description = "Lean + Nix";
 
   inputs.nixpkgs.url = github:NixOS/nixpkgs/nixpkgs-unstable;
+  inputs.nixpkgs.follows = "nix/nixpkgs";
   inputs.flake-utils.url = github:numtide/flake-utils;
   inputs.nix.url = github:Kha/nix/nale;
+  inputs.nix-portable.url = github:Kha/nix-portable/nale;
+  inputs.nix-portable.inputs.nixpkgs.follows = "nix/nixpkgs";
   inputs.lake2nix.url = "path:./lake2nix";
 
   outputs = inputs:
@@ -17,13 +20,18 @@
           buildInputs = [ nix.dev ] ++ nix.buildInputs;
           buildPhase = ''
             mkdir $out
-            c++ -shared -o $out/nale.so nale.cc -std=c++17 -I ${nix.dev}/include/nix -O0 -g
+            c++ -shared -o $out/nale.so nale.cc -std=c++17 -I ${nix.dev}/include/nix -O2
           '';
           dontInstall = true;
         };
         nix-nale = writeShellScriptBin "nix" ''
           NALE_NIX_SELF=$BASH_SOURCE NALE_LAKE2NIX='github:Kha/nale/da62861b59586b56fc5c00df7b7a67b5c8023b0b?dir=lake2nix' ''${NALE_NIX_PREFIX:-} ''${NALE_NIX:-${nix}/bin/nix} --extra-plugin-files ${nale-plugin}/nale.so --experimental-features 'nix-command flakes' --extra-substituters https://lean4.cachix.org/ --option warn-dirty false "$@"
         '';
+        nix-nale-portable = inputs.nix-portable.packages.${system}.nix-portable.override {
+          inherit nix;
+          binRoot = nix-nale;
+        };
+        default = nix-nale-portable;
         inherit (inputs.lake2nix.packages.${system}) ciShell;
       };
     });
