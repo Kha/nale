@@ -60,28 +60,13 @@
       }
     },
     "lake": {
-      "inputs": {
-        "flake-utils": [
-          "lake2nix",
-          "lean",
-          "flake-utils"
-        ],
-        "lean": [
-          "lake2nix",
-          "lean"
-        ],
-        "nixpkgs": [
-          "lake2nix",
-          "lean",
-          "nixpkgs"
-        ]
-      },
+      "flake": false,
       "locked": {
-        "lastModified": 1666745921,
-        "narHash": "sha256-PpNOr+woZfA3Og9huuL+76UBXzEeJel5x3hwiLeILao=",
+        "lastModified": 1670021931,
+        "narHash": "sha256-9Zb3NfWIGyyLzywHDw2XeLu6G2qfq1hkRwqhSnalj44=",
         "owner": "leanprover",
         "repo": "lake",
-        "rev": "004034496ef84b21976a940edc65f335340bd2ec",
+        "rev": "235383015cdcb0082777b0347b84dba01843c79c",
         "type": "github"
       },
       "original": {
@@ -98,11 +83,11 @@
       },
       "locked": {
         "dir": "lake2nix",
-        "lastModified": 1670772920,
-        "narHash": "sha256-ApxZT3WJgyiej5EURNuZ6QucdMm2NOh6wbZmo8qPrbM=",
+        "lastModified": 1670795877,
+        "narHash": "sha256-KP0mV+I6hg+PEmtC00BIis/sS9sDK3uAbbYDqjfY2vg=",
         "owner": "Kha",
         "repo": "nale",
-        "rev": "f21ef1e0a3c3839c5f89543948326e946518fb88",
+        "rev": "c68749d3ccd602be7fabdd9678da4dfd7bbc00f4",
         "type": "github"
       },
       "original": {
@@ -120,16 +105,15 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1669564730,
-        "narHash": "sha256-JnYMk2JWY80KF/LZC6t6ivgeIUXr/ZqUAgxcQVJpqiA=",
-        "owner": "Kha",
+        "lastModified": 1670575868,
+        "narHash": "sha256-yqoJVgGhdeBkA5kQ4jrPz/i74m9NcPE3njeKYQLPARg=",
+        "owner": "leanprover",
         "repo": "lean4",
-        "rev": "d780ed12b391baa3823afee9f79217becef684aa",
+        "rev": "7034e64b4fcc0dada766c176d6aa748c71d05a50",
         "type": "github"
       },
       "original": {
-        "owner": "Kha",
-        "ref": "nale",
+        "owner": "leanprover",
         "repo": "lean4",
         "type": "github"
       }
