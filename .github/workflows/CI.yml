@@ -6,6 +6,13 @@ on:
   pull_request:
     branches:
       - master
+
+permissions:
+  # deployments permission to deploy GitHub pages website
+  deployments: write
+  # contents permission to update benchmark contents in gh-pages branch
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -57,19 +64,28 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/download-artifact@v3
         with:
           path: nale
       - name: Bench
         run: |
-          ln -s nale/nale/nix-portable ./nix
+          ln -s nale/nix-portable ./nix
           chmod u+x ./nix
           export PATH=.:$PATH
-          \time -f '%e %M' nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
-          \time -f '%e %M' nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
-          \time -f '%e %M' nix flake clone nale+github:leanprover-community/mathlib4/5f78e345 --dest mathlib4
+          alias bench='\time -f "%e %M" -ao times'
+          bench nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
+          bench nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
+          bench nix flake clone nale+github:leanprover-community/mathlib4/5f78e345 --dest mathlib4
           cd mathlib4
           git checkout 5f78e345  # TODO: should be implied by above
-          \time -f '%e %M' nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
+          bench nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
           echo >> README.md
-          \time -f '%e %M' nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
+          bench nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: customSmallerIsBetter
+          output-file-path: output.txt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
