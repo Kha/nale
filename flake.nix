@@ -30,6 +30,11 @@
         nix-nale-portable = inputs.nix-portable.packages.${system}.nix-portable.override {
           inherit nix;
           binRoot = nix-nale;
+          extraNixConf = ''
+            max-jobs = auto
+            keep-outputs = true
+            extra-trusted-public-keys = lean4.cachix.org-1:mawtxSxcaiWE24xCXXgh3qnvlTkyU7evRRnGeAhD4Wk=
+          '';
         };
         default = nix-nale-portable;
         inherit (inputs.lake2nix.packages.${system}) ciShell;
