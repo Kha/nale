@@ -57,7 +57,7 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: nale
+        name: nale-bin
         path: result/bin
 
   bench:
@@ -67,25 +67,30 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v3
         with:
-          path: nale
+          path: nale-bin
       - name: Bench
         run: |
-          ln -s nale/nix-portable ./nix
+          set -x
+          ln -s nale-bin/nix-portable ./nix
           chmod u+x ./nix
           export PATH=.:$PATH
-          alias bench='\time -f "%e %M" -ao times'
-          bench nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
-          bench nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
-          bench nix flake clone nale+github:leanprover-community/mathlib4 --dest mathlib4
+          bench() { \time -f "$1,%e,%M" -ao ${{ github.workspace }}/times.csv "${@:2}" }
+          bench "Initial build" nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
+          bench "No=op rebuild" nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
+          nix flake clone nale+github:leanprover-community/mathlib4 --dest mathlib4
           cd mathlib4
           git checkout 5f78e345
-          bench nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
+          bench "Checkout rebuild" nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
           echo >> README.md
-          bench nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
+          bench "Rebuild after unrelated change" nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
+          cd ..
+          cat times.csv
+          jq -Rsn '[inputs | . / "\n" | (.[] | select(length > 0) | . / ",") as $input | {"name": $input[0], "unit": "s", "value": $input[1] }]' < times.csv > times.json
+          cat times.json
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
         with:
           tool: customSmallerIsBetter
-          output-file-path: output.txt
+          output-file-path: times.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
