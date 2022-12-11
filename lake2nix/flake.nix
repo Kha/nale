@@ -1,20 +1,22 @@
 {
   description = "Convert Lean projects using Lake to Nix derivations";
 
-  inputs.lean.url = github:Kha/lean4/nale;
+  inputs.lean.url = github:leanprover/lean4;
   inputs.lake.url = github:leanprover/lake;
-  inputs.lake.inputs.lean.follows = "lean";
-  inputs.lake.inputs.flake-utils.follows = "lean/flake-utils";
-  inputs.lake.inputs.nixpkgs.follows = "lean/nixpkgs";
+  inputs.lake.flake = false;
 
   outputs = { self, lean, lake, flake-utils }: let
     outs = flake-utils.lib.eachDefaultSystem (system:
     with lean.packages.${system}.nixpkgs;
     let
       leanPkgs = lean.packages.${system};
-      Lake = lake.packages.${system};
+      Lake = leanPkgs.buildLeanPackage {
+        name = "Lake";
+        src = lake;
+        roots = [ { mod = "Lake"; glob = "andSubmodules"; } ];
+      };
       LakeExport = leanPkgs.buildLeanPackage {
-        name = "LakeExport";  # must match the name of the top-level .lean file
+        name = "LakeExport";
         deps = [ Lake ];
         src = ./.;
         linkFlags = lib.optional (!stdenv.hostPlatform.isWindows) "-rdynamic";

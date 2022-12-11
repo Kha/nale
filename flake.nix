@@ -7,7 +7,7 @@
   inputs.nix.url = github:Kha/nix/nale;
   inputs.nix-portable.url = github:Kha/nix-portable/nale;
   inputs.nix-portable.inputs.nixpkgs.follows = "nix/nixpkgs";
-  inputs.lake2nix.url = "path:./lake2nix";
+  inputs.lake2nix.url = github:Kha/nale?dir=lake2nix;
 
   outputs = inputs:
     inputs.flake-utils.lib.eachDefaultSystem (system: with inputs.nixpkgs.legacyPackages.${system}; {
@@ -25,7 +25,15 @@
           dontInstall = true;
         };
         nix-nale = writeShellScriptBin "nix" ''
-          NALE_NIX_SELF=$BASH_SOURCE NALE_LAKE2NIX='github:Kha/nale/da62861b59586b56fc5c00df7b7a67b5c8023b0b?dir=lake2nix' ''${NALE_NIX_PREFIX:-} ''${NALE_NIX:-${nix}/bin/nix} --extra-plugin-files ${nale-plugin}/nale.so --experimental-features 'nix-command flakes' --extra-substituters https://lean4.cachix.org/ --option warn-dirty false "$@"
+          NIX_USER_CONF_FILES= \
+          NALE_NIX_SELF=$BASH_SOURCE \
+          NALE_LAKE2NIX=''${NALE_LAKE2NIX:-'github:Kha/nale/${ inputs.lake2nix.rev }?dir=lake2nix'} \
+          ''${NALE_NIX_PREFIX:-} \
+          ''${NALE_NIX:-${nix}/bin/nix} --extra-plugin-files ${nale-plugin}/nale.so \
+            --experimental-features 'nix-command flakes' \
+            --extra-substituters https://lean4.cachix.org/ \
+            --option warn-dirty false \
+            "$@"
         '';
         nix-nale-portable = inputs.nix-portable.packages.${system}.nix-portable.override {
           inherit nix;

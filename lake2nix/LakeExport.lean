@@ -1,4 +1,5 @@
 import Lake
+import Lake.CLI.Main
 
 open Lake
 open Lean
@@ -34,14 +35,13 @@ def main (args : List String) : IO UInt32 := do
   initSearchPath "."
   let (leanInstall?, lakeInstall?) ← findInstall?
   (MainM.runLogIO do
-    let config := { env := (← Env.compute lakeInstall?.get! leanInstall?.get!), rootDir := args[0]! : LoadConfig.{0} }
+    let config := { env := (← Env.compute lakeInstall?.get! leanInstall?.get!), rootDir := args[0]! : LoadConfig }
     --let ws ← loadWorkspace.{0} config
     -- same as `loadWorkspace`, but without invoking `git`
     let ws ← do
       Lean.searchPathRef.set config.env.leanSearchPath
       let configEnv ← elabConfigFile config.rootDir config.configOpts config.leanOpts config.configFile
       let pkgConfig ← IO.ofExcept <| PackageConfig.loadFromEnv configEnv config.leanOpts
-      let repo := GitRepo.mk config.rootDir
       let root : Package := {
         configEnv, leanOpts := config.leanOpts
         dir := config.rootDir, config := pkgConfig

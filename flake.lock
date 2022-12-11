@@ -90,6 +90,28 @@
         "type": "github"
       }
     },
+    "lake2nix": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "lake": "lake",
+        "lean": "lean"
+      },
+      "locked": {
+        "dir": "lake2nix",
+        "lastModified": 1670772920,
+        "narHash": "sha256-ApxZT3WJgyiej5EURNuZ6QucdMm2NOh6wbZmo8qPrbM=",
+        "owner": "Kha",
+        "repo": "nale",
+        "rev": "f21ef1e0a3c3839c5f89543948326e946518fb88",
+        "type": "github"
+      },
+      "original": {
+        "dir": "lake2nix",
+        "owner": "Kha",
+        "repo": "nale",
+        "type": "github"
+      }
+    },
     "lean": {
       "inputs": {
         "flake-utils": "flake-utils_3",
@@ -346,6 +368,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "lake2nix": "lake2nix",
         "nix": "nix_2",
         "nix-portable": "nix-portable",
         "nixpkgs": [
