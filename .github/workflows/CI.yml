@@ -76,9 +76,9 @@ jobs:
           alias bench='\time -f "%e %M" -ao times'
           bench nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
           bench nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
-          bench nix flake clone nale+github:leanprover-community/mathlib4/5f78e345 --dest mathlib4
+          bench nix flake clone nale+github:leanprover-community/mathlib4 --dest mathlib4
           cd mathlib4
-          git checkout 5f78e345  # TODO: should be implied by above
+          git checkout 5f78e345
           bench nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
           echo >> README.md
           bench nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
