@@ -71,18 +71,18 @@ jobs:
       - name: Bench
         run: |
           set -x
-          ln -s nale-bin/nix-portable ./nix
+          ln -s nale-bin/nale-bin/nix-portable ./nix
           chmod u+x ./nix
-          export PATH=.:$PATH
-          bench() { \time -f "$1,%e,%M" -ao ${{ github.workspace }}/times.csv "${@:2}" }
-          bench "Initial build" nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
-          bench "No=op rebuild" nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib --override-input lean github:Kha/lean4/nale -v
+          export PATH=$PWD:$PATH
+          bench() { \time -f "$1,%e,%M" -ao ${{ github.workspace }}/times.csv "${@:2}"; }
+          bench "Initial build" nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib.mods.\"Mathlib.Tactic.NormNum\" --override-input lean github:Kha/lean4/nale -v
+          bench "No=op rebuild" nix build nale+github:leanprover-community/mathlib4/5f78e345#Mathlib.mods.\"Mathlib.Tactic.NormNum\" --override-input lean github:Kha/lean4/nale -v
           nix flake clone nale+github:leanprover-community/mathlib4 --dest mathlib4
           cd mathlib4
           git checkout 5f78e345
-          bench "Checkout rebuild" nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
+          bench "Checkout rebuild" nix build nale+git+file:$PWD#Mathlib.mods.\"Mathlib.Tactic.NormNum\" --override-input lean github:Kha/lean4/nale -v
           echo >> README.md
-          bench "Rebuild after unrelated change" nix build nale+git+file:$PWD --override-input lean github:Kha/lean4/nale -v
+          bench "Rebuild after unrelated change" nix build nale+git+file:$PWD#Mathlib.mods.\"Mathlib.Tactic.NormNum\" --override-input lean github:Kha/lean4/nale -v
           cd ..
           cat times.csv
           jq -Rsn '[inputs | . / "\n" | (.[] | select(length > 0) | . / ",") as $input | {"name": $input[0], "unit": "s", "value": $input[1] }]' < times.csv > times.json
