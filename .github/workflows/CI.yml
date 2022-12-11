@@ -53,7 +53,7 @@ jobs:
     - name: Rebuild Nix Store Cache
       run: |
         rm -rf nix-store-cache || true
-        nix copy ./push* ./result ./lake2nix#oTree --to file://$PWD/nix-store-cache?compression=none
+        nix copy ./push* ./result ./lake2nix#lean-all --to file://$PWD/nix-store-cache?compression=none
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
