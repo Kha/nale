@@ -68,12 +68,14 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           path: nale-bin
-      - name: Bench
+      - name: Setup
         run: |
-          set -x
           ln -s nale-bin/nale-bin/nix-portable ./nix
           chmod u+x ./nix
-          export PATH=$PWD:$PATH
+          echo $PWD >> $GITHUB_PATH
+      - name: Bench
+        shell: nix run github:leanprover/lean4#ciShell -- bash -euxo pipefail {0}
+        run: |
           bench() { \time -f "$1,%e,%M" -ao ${{ github.workspace }}/times.csv "${@:2}"; }
           bench "Initial build" nix build nale+github:leanprover-community/mathlib4/c4c6eb6#Mathlib.mods.\"Mathlib.Tactic.ToAdditive\"
           bench "No=op rebuild" nix build nale+github:leanprover-community/mathlib4/c4c6eb6#Mathlib.mods.\"Mathlib.Tactic.ToAdditive\"
