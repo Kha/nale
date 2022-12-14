@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+bench() { \time -f "$1,%e,%M" -ao ${{ github.workspace }}/times.csv "${@:2}"; }
+bench "Initial build" nix build nale+github:leanprover-community/mathlib4/c4c6eb6#Mathlib.mods.\"Mathlib.Tactic.ToAdditive\"
+bench "No=op rebuild" nix build nale+github:leanprover-community/mathlib4/c4c6eb6#Mathlib.mods.\"Mathlib.Tactic.ToAdditive\"
+nix flake clone nale+github:leanprover-community/mathlib4 --dest mathlib4
+cd mathlib4
+git checkout c4c6eb6
+bench "Checkout rebuild" nix build nale+git+file:$PWD#Mathlib.mods.\"Mathlib.Tactic.ToAdditive\"
+echo >> README.md
+bench "Rebuild after unrelated change" nix build nale+git+file:$PWD#Mathlib.mods.\"Mathlib.Tactic.ToAdditive\"
+cd ..
+jq -Rsn '[inputs | . / "\n" | (.[] | select(length > 0) | . / ",") as $input | {"name": $input[0], "unit": "s", "value": $input[1] }]' < times.csv > times.json
