@@ -73,7 +73,7 @@ jobs:
           chmod u+x nale-bin/nale-bin/nix-portable
           echo $PWD/nale-bin/nale-bin >> $GITHUB_PATH
       - name: Bench
-        shell: nix run github:leanprover/lean4#ciShell -- bash -euxo pipefail {0}
+        shell: nix-portable nix run github:leanprover/lean4#ciShell -- bash -euxo pipefail {0}
         run: ./script/bench
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
