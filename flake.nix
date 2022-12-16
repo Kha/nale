@@ -40,6 +40,7 @@
           binRoot = nix-nale;
           extraNixConf = ''
             max-jobs = auto
+            http-connections = 300  # important for multiplexing throughput
             keep-outputs = true
             extra-trusted-public-keys = lean4.cachix.org-1:mawtxSxcaiWE24xCXXgh3qnvlTkyU7evRRnGeAhD4Wk=
           '';
