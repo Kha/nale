@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1671204141221,
+  "lastUpdate": 1671207797974,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -442,6 +442,70 @@ window.BENCHMARK_DATA = {
           {
             "name": "URL build",
             "value": "23.17",
+            "unit": "s"
+          },
+          {
+            "name": "URL build [RX]",
+            "value": "1",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "2137162496c6d87c188fecbc2116dd62d4db55a0",
+          "message": "release action",
+          "timestamp": "2022-12-16T17:12:34+01:00",
+          "tree_id": "2ba0bdef0221d6c406dd676b49d667144b88d9c0",
+          "url": "https://github.com/Kha/nale/commit/2137162496c6d87c188fecbc2116dd62d4db55a0"
+        },
+        "date": 1671207797515,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "314.82",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "528",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.45",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "Rebuild after unrelated change",
+            "value": "35.41",
+            "unit": "s"
+          },
+          {
+            "name": "Rebuild after unrelated change [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "URL build",
+            "value": "18.97",
             "unit": "s"
           },
           {
