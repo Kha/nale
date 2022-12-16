@@ -2,7 +2,7 @@ name: "CI"
 on:
   push:
     branches:
-      - master
+      - '*'
     tags:
       - '*'
   pull_request:
@@ -20,6 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Setup Nale
+      run: |
+        curl -sSfL https://github.com/Kha/nale/releases/latest/download/nix-portable -o nix
+        chmod u+x nix
+        #echo ' ' > ~/.config/nix.conf
+        echo $PWD >> $GITHUB_PATH
     - name: Setup Nix Cache
       uses: actions/cache@v3
       with:
@@ -31,37 +37,28 @@ jobs:
           nix-store-cache
     - run: |
         cp -r nix-store-cache nix-store-cache-copy || true
-    - uses: cachix/install-nix-action@v18
-      with:
-        # https://github.com/NixOS/nix/issues/6572
-        install_url: https://releases.nixos.org/nix/nix-2.7.0/install
-        extra_nix_config: |
-          substituters = file://${{ github.workspace }}/nix-store-cache-copy?priority=10&trusted=true https://cache.nixos.org/
-    - name: Install Cachix
-      uses: cachix/cachix-action@v12
-      with:
-        name: lean4
-        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-        skipPush: true  # we push specific outputs only
     - name: Build
       id: build
       run: |
-        nix flake lock --update-input lake2nix  # HACK
-        nix run .#nix -- build ./lake2nix -o push
-        nix build .
+        args="-L --option extra-substituters file://${{ github.workspace }}/nix-store-cache-copy?priority=10&trusted=true"
+        nix shell . $args -c sh -c 'cp $(which nix-portable) .'
+        nix build ./lake2nix -o result-lake2nix $args
       shell: nix run .#ciShell -- bash -euxo pipefail {0}
-    - name: Push to Cachix
-      run: |
-        [ -z "${{ secrets.CACHIX_AUTH_TOKEN }}" ] || cachix push -j4 lean4 ./push* || true
     - name: Rebuild Nix Store Cache
       run: |
         rm -rf nix-store-cache || true
-        nix copy ./push* ./result ./lake2nix#lean-all --to file://$PWD/nix-store-cache?compression=none
+        nix copy . --to file://$PWD/nix-store-cache?compression=none
+    - name: Push to Cachix
+      env:
+        CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      run: |
+        [ -z "${{ secrets.CACHIX_AUTH_TOKEN }}" ] || nix run nixpkgs#cachix push -j4 lean4 ./result-lake2nix
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: nale-bin
-        path: result/bin
+        path: nix-portable
+        if-no-files-found: error
 
   bench:
     needs: build
