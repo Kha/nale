@@ -14,35 +14,29 @@
       packages = rec {
         nix = inputs.nix.packages.${system}.nix;
         #nix = (pkg: pkg.overrideAttrs (_: { stdenv = stdenvAdapters.keepDebugInfo pkg.stdenv; separateDebugInfo = false; NIX_CFLAGS_COMPILE = " -ggdb -Og"; dontStrip = true; })) inputs.nix.packages.${system}.nix;
-        nale-plugin = stdenv.mkDerivation {
-          name ="nale-plugin";
-          src = builtins.path { name = "nale.cc"; path = ./.; filter = p: _: p == toString ./nale.cc; };
-          buildInputs = [ nix.dev ] ++ nix.buildInputs;
-          buildPhase = ''
-            mkdir $out
-            c++ -shared -o $out/nale.so nale.cc -std=c++17 -I ${nix.dev}/include/nix -O2
-          '';
-          dontInstall = true;
-        };
+        nale-plugin = runCommandCC "nale-plugin" { buildInputs = [ nix.dev ] ++ nix.buildInputs; } ''
+          mkdir $out
+          c++ -shared -o $out/nale.so ${./nale.cc} -std=c++17 -I ${nix.dev}/include/nix -O2
+        '';
         nix-nale = writeShellScriptBin "nix" ''
           NIX_USER_CONF_FILES= \
           NALE_NIX_SELF=$BASH_SOURCE \
           NALE_LAKE2NIX=''${NALE_LAKE2NIX:-'github:Kha/nale/${ inputs.lake2nix.rev }?dir=lake2nix'} \
-          ''${NALE_NIX_PREFIX:-} \
-          ''${NALE_NIX:-${nix}/bin/nix} --extra-plugin-files ${nale-plugin}/nale.so \
-            --experimental-features 'nix-command flakes' \
-            --extra-substituters https://lean4.cachix.org/ \
-            --option warn-dirty false \
+          exec ''${NALE_NIX_PREFIX:-} ''${NALE_NIX:-${nix}/bin/"$(basename "$0")"} \
+            --option extra-plugin-files ${nale-plugin}/nale.so \
             "$@"
         '';
+        nix-nale-bundle = symlinkJoin { name = "nix-nale-bundle"; paths = [ nix-nale nix ]; };
         nix-nale-portable = inputs.nix-portable.packages.${system}.nix-portable.override {
-          inherit nix;
-          binRoot = nix-nale;
+          nix = nix-nale-bundle;
           extraNixConf = ''
             max-jobs = auto
             http-connections = 300  # important for multiplexing throughput
             keep-outputs = true
+            extra-substituters = https://lean4.cachix.org/
             extra-trusted-public-keys = lean4.cachix.org-1:mawtxSxcaiWE24xCXXgh3qnvlTkyU7evRRnGeAhD4Wk=
+            experimental-features = nix-command flakes
+            warn-dirty = false
           '';
         };
         default = nix-nale-portable;
