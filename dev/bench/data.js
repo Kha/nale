@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1671288322011,
+  "lastUpdate": 1671299275153,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -570,6 +570,70 @@ window.BENCHMARK_DATA = {
           {
             "name": "URL build",
             "value": "23.40",
+            "unit": "s"
+          },
+          {
+            "name": "URL build [RX]",
+            "value": "1",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "962d55412152ab319e74fd3ca13e26bcb97fb493",
+          "message": "use Nix fork to cache lake2nix",
+          "timestamp": "2022-12-17T18:36:23+01:00",
+          "tree_id": "fbd176963d339050050de9e78b5301b90301bf56",
+          "url": "https://github.com/Kha/nale/commit/962d55412152ab319e74fd3ca13e26bcb97fb493"
+        },
+        "date": 1671299274722,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "233.22",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "535",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.47",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "Rebuild after unrelated change",
+            "value": "35.99",
+            "unit": "s"
+          },
+          {
+            "name": "Rebuild after unrelated change [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "URL build",
+            "value": "20.32",
             "unit": "s"
           },
           {
