@@ -46,7 +46,7 @@ jobs:
       id: build
       run: |
         nix flake lock --update-input lake2nix  # HACK
-        nix build ./lake2nix -o push
+        nix run .#nix -- build ./lake2nix -o push
         nix build .
       shell: nix run .#ciShell -- bash -euxo pipefail {0}
     - name: Push to Cachix
