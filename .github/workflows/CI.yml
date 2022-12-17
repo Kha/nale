@@ -84,6 +84,14 @@ jobs:
           output-file-path: times.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
+      - name: Store reference result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Lake Reference
+          tool: customSmallerIsBetter
+          output-file-path: reference.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
 
   release:
     if: startsWith(github.ref, 'refs/tags/')

@@ -26,3 +26,14 @@ jq -Rsn '[inputs | . / "\n" | (.[] | select(length > 0) | . / ",") as $input |
   [{"name": $input[0], "unit": "s", "value": $input[1] },
    {"name": "\($input[0]) [RX]", "unit": "MB", "value": $input[3] }]] |
   flatten' < times.csv > times.json
+
+echo -n > times.csv
+export PATH=~/.elan/bin:$PATH
+cd mathlib4
+bench "Initial build" bash -c 'curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none && lake build +Mathlib.Tactic.ToAdditive'
+bench "No-op rebuild" lake build +Mathlib.Tactic.ToAdditive
+cd ..
+jq -Rsn '[inputs | . / "\n" | (.[] | select(length > 0) | . / ",") as $input |
+  [{"name": $input[0], "unit": "s", "value": $input[1] },
+   {"name": "\($input[0]) [RX]", "unit": "MB", "value": $input[3] }]] |
+  flatten' < times.csv > reference.json
