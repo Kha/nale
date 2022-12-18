@@ -53,11 +53,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1671107926,
-        "narHash": "sha256-oS3Pp3PwxjKS0vRmM+iaHx6kuQHhIh4kEQg3epDbp5s=",
+        "lastModified": 1671372168,
+        "narHash": "sha256-YlJSr7/Jp5VHPMrFwb2LcT/MrYwI1lXVhW9B0TP+BZM=",
         "owner": "leanprover",
         "repo": "lean4",
-        "rev": "f6cd6c069587cfe62dd68cb6330f9ad794a56724",
+        "rev": "adf74380cc3ea99e066840871e8be6df4534e267",
         "type": "github"
       },
       "original": {
