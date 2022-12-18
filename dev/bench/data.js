@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1671370989792,
+  "lastUpdate": 1671373338431,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -826,6 +826,70 @@ window.BENCHMARK_DATA = {
           {
             "name": "URL build",
             "value": "15.99",
+            "unit": "s"
+          },
+          {
+            "name": "URL build [RX]",
+            "value": "1",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "b35891ff5c6b003aca835256b5cd0a2088ba6764",
+          "message": "update bench Lean, using cached Leanc.src",
+          "timestamp": "2022-12-18T15:09:15+01:00",
+          "tree_id": "5735ff01651190ed2c0494484779ad3be64608b6",
+          "url": "https://github.com/Kha/nale/commit/b35891ff5c6b003aca835256b5cd0a2088ba6764"
+        },
+        "date": 1671373337342,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "319.78",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "571",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.73",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "Rebuild after unrelated change",
+            "value": "47.13",
+            "unit": "s"
+          },
+          {
+            "name": "Rebuild after unrelated change [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "URL build",
+            "value": "22.04",
             "unit": "s"
           },
           {
