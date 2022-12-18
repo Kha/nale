@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+source "$(dirname "${BASH_SOURCE}")"/common.sh
+export PATH=~/.elan/bin:$PATH
+
+bench "Initial build" bash -c 'curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none && lake build +Mathlib.Tactic.ToAdditive'
+bench "No-op rebuild" lake build +Mathlib.Tactic.ToAdditive
+
+toJson

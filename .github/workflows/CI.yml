@@ -84,12 +84,29 @@ jobs:
           output-file-path: times.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
+
+  bench-reference:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          path: nale-bin
+      - name: Setup
+        run: |
+          chmod u+x nale-bin/nale-bin/nix-portable
+          echo $PWD/nale-bin/nale-bin >> $GITHUB_PATH
+      - name: Bench
+        shell: nix-portable nix run github:leanprover/lean4#ciShell -- bash -euxo pipefail {0}
+        run: ./script/bench-reference
       - name: Store reference result
         uses: benchmark-action/github-action-benchmark@v1
         with:
           name: Lake Reference
           tool: customSmallerIsBetter
-          output-file-path: reference.json
+          output-file-path: times.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
 
