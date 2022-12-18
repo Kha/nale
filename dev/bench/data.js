@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1671370988660,
+  "lastUpdate": 1671370989792,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -916,6 +916,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "No-op rebuild",
             "value": "0.51",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "35620434b216701fece04c71221ed874a4bddcfb",
+          "message": "re-enable use-sqlite-wal",
+          "timestamp": "2022-12-18T14:32:19+01:00",
+          "tree_id": "55d694e24de17122d44237d91bcf14cc178ca0af",
+          "url": "https://github.com/Kha/nale/commit/35620434b216701fece04c71221ed874a4bddcfb"
+        },
+        "date": 1671370989473,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "55.48",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "202",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.56",
             "unit": "s"
           },
           {
