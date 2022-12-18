@@ -30,7 +30,7 @@
         lake2pkg = { config, deps, src, leanPkgs ? leanPkgs }: leanPkgs.buildLeanPackage {
           inherit (config) name libName;
           inherit deps;
-          src = "${src}/${config.srcDir}";
+          src = src + "/${config.srcDir}";
           roots = config.globs;
           leanFlags = config.moreLeanArgs;
           leancFlags = config.moreLeancArgs;
