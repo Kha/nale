@@ -37,6 +37,7 @@
             extra-trusted-public-keys = lean4.cachix.org-1:mawtxSxcaiWE24xCXXgh3qnvlTkyU7evRRnGeAhD4Wk=
             experimental-features = nix-command flakes
             warn-dirty = false
+            use-sqlite-wal = true  # originally disabled for NFS, but likely slower
           '';
         };
         default = nix-nale-portable;
