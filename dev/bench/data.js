@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1671380219983,
+  "lastUpdate": 1671384457857,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -1392,6 +1392,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "No-op rebuild",
             "value": "0.51",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "d114307d5e9156242cdd34928406e13499febe7d",
+          "message": "update lake2nix Lean, actually using cached Leanc.src",
+          "timestamp": "2022-12-18T18:16:29+01:00",
+          "tree_id": "912ace124666df359b245098b4d924bb25092033",
+          "url": "https://github.com/Kha/nale/commit/d114307d5e9156242cdd34928406e13499febe7d"
+        },
+        "date": 1671384457173,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "60.69",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "202",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.50",
             "unit": "s"
           },
           {
