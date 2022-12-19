@@ -68,29 +68,40 @@ struct OverlayAccessor : InputAccessor
 
 struct NaleInputScheme : InputScheme
 {
-    static Attrs wrapAttrs(Attrs attrs) {
-        attrs["nested_type"] = attrs["type"];
-        attrs["type"] = "nale";
-        return attrs;
+    static Attrs mergeAttrs(Attrs nested, Attrs ours) {
+        nested["nested_type"] = nested["type"];
+        nested["type"] = "nale";
+        for (auto const & p : ours)
+            nested[p.first] = p.second;
+        return nested;
     }
 
-    static Attrs unwrapAttrs(Attrs attrs) {
+    static std::pair<Attrs, Attrs> splitAttrs(Attrs attrs) {
         attrs["type"] = attrs["nested_type"];
         attrs.erase("nested_type");
-        return attrs;
+        Attrs ours;
+        if (attrs.count("leanVersion")) {
+            ours["leanVersion"] = attrs["leanVersion"];
+            attrs.erase("leanVersion");
+        }
+        return {attrs, ours};
     }
 
     std::optional<Input> inputFromURL(const ParsedURL & url) const override
     {
         auto url2(url);
         if (hasPrefix(url2.scheme, "nale+"))
-            url2 = parseURL(std::string(url2.to_string(), 5));
+            url2.scheme = std::string(url2.scheme, 5);
         else
             return {};
 
+        Attrs ours;
+        if (url2.query.count("leanVersion")) {
+            ours.insert_or_assign("leanVersion", url2.query["leanVersion"]);
+            url2.query.erase("leanVersion");
+        }
         auto input = Input::fromURL(url2);
-        input.attrs = wrapAttrs(input.attrs);
-
+        input.attrs = mergeAttrs(input.attrs, ours);
         return input;
     }
 
@@ -102,16 +113,18 @@ struct NaleInputScheme : InputScheme
         //    if (name != "type" && name != "nested")
         //        throw Error("unsupported Nale input attribute '%s'", name);
 
-        Input input = Input::fromAttrs(unwrapAttrs(attrs));
-        input.attrs = wrapAttrs(input.attrs);
-
+        auto [nested, ours] = splitAttrs(attrs);
+        Input input = Input::fromAttrs(std::move(nested));
+        input.attrs = mergeAttrs(input.attrs, ours);
         return input;
     }
 
     ParsedURL toURL(const Input & input) const override
     {
-        auto url = Input::fromAttrs(unwrapAttrs(input.attrs)).toURL();
-        return parseURL("nale+" + url.to_string());
+        auto [nested, ours] = splitAttrs(input.attrs);
+        auto url = Input::fromAttrs(std::move(nested)).toURL();
+        url.scheme = "nale+" + url.scheme;
+        return url;
     }
 
     Input applyOverrides(
@@ -119,43 +132,44 @@ struct NaleInputScheme : InputScheme
         std::optional<std::string> ref,
         std::optional<Hash> rev) const override
     {
-        auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
-        Input input2 = nested.applyOverrides(ref, rev);
-        input2.attrs = wrapAttrs(input2.attrs);
+        auto [nested, ours] = splitAttrs(input.attrs);
+        auto input2 = Input::fromAttrs(std::move(nested));
+        input2 = input2.applyOverrides(ref, rev);
+        input2.attrs = mergeAttrs(input2.attrs, ours);
         return input2;
     }
 
     void clone(const Input & input, const Path & destDir) const override
     {
-        auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
+        auto nested = Input::fromAttrs(splitAttrs(input.attrs).first);
         // TODO: patch here as well?
         nested.clone(destDir);
     }
 
     bool isLocked(const Input & input) const override
     {
-        auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
+        auto nested = Input::fromAttrs(splitAttrs(input.attrs).first);
         return nested.isLocked();
     }
 
     std::optional<std::string> isRelative(const Input & input) const override
     {
-        auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
+        auto nested = Input::fromAttrs(splitAttrs(input.attrs).first);
         return nested.isRelative();
     }
 
     std::optional<std::string> getFingerprint(ref<Store> store, const Input & input) const override
     {
-        auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
+        auto nested = Input::fromAttrs(splitAttrs(input.attrs).first);
         auto f = nested.getFingerprint(store);
         return f ? std::optional<std::string>(*f + getEnv("NALE_LAKE2NIX").value()) : std::nullopt;
     }
 
-    nix::StorePath mkFlakeFiles(ref<Store> store, InputAccessor & acc) const
+    nix::StorePath mkFlakeFiles(ref<Store> store, const Input & input, InputAccessor & acc) const
     {
         auto manifest = acc.pathExists(CanonPath("/lake-manifest.json")) ? acc.readFile(CanonPath("/lake-manifest.json")) : "";
         auto lakefile = acc.readFile(CanonPath("/lakefile.lean"));
-        auto leanVersion = chomp(acc.readFile(CanonPath("/lean-toolchain")));
+        auto leanVersion = maybeGetStrAttr(input.attrs, "leanVersion").value_or(chomp(acc.readFile(CanonPath("/lean-toolchain"))));
         Attrs lockedAttrs;
         lockedAttrs["manifest"] = manifest;
         lockedAttrs["lakefile"] = lakefile;
@@ -203,15 +217,14 @@ struct NaleInputScheme : InputScheme
                 if (url.compare(0, prefix.size(), prefix) == 0) {
                     url.replace(0, prefix.size(), "github:");
                 }
-                depInputs += (format("  inputs.%1%.url = nale+%2%/%3%;\n  inputs.%1%.inputs.lean.follows = \"lean\";\n") %
-                    name % url % rev).str();
+                depInputs += (format("  inputs.%1%.url = nale+%2%/%3%?leanVersion=%4%;\n  inputs.%1%.inputs.lean.follows = \"lean\";\n") %
+                    name % url % rev % leanVersion).str();
                 deps += (format("inputs.%1% ") % name).str();
             }
         }
         auto flakeContents = format(R"({
   inputs.lean.url = github:%1%;
   inputs.lake2nix.url = %2%;
-    #inputs.lake2nix.inputs.lean.follows = "lean";
 %3%
   outputs = inputs: inputs.lake2nix.lib.lakeRepo2flake { src = ./.; leanPkgs = inputs.lean.packages; depFlakes = [ %4% ]; };
 })") % leanVersion % getEnv("NALE_LAKE2NIX").value() % depInputs % deps;
@@ -219,7 +232,7 @@ struct NaleInputScheme : InputScheme
         // creating new EvalState segfaults?
         //auto state = std::shared_ptr<EvalState>(new EvalState({}, store));
         //nix::flake::lockFlake(globals.state, parseFlakeRef(".", tmpDir), {}).lockFile.write(tmpDir + "/flake.lock");
-        runProgram(getEnv("NALE_NIX_SELF").value_or("nix"), false, {"--quiet", "flake", "lock", tmpDir});
+        runProgram(getEnv("NALE_NIX_SELF").value_or("nix"), false, {"-v", "flake", "lock", tmpDir});
 
         auto storePath = store->addToStore("source.nale", tmpDir, FileIngestionMethod::Recursive, htSHA256, defaultPathFilter);
         getCache()->add(
@@ -235,11 +248,12 @@ struct NaleInputScheme : InputScheme
 
     std::pair<ref<InputAccessor>, Input> getAccessor(ref<Store> store, const Input & input) const override
     {
-        auto nested = Input::fromAttrs(unwrapAttrs(input.attrs));
-        auto [acc, input2] = nested.getAccessor(store);
-        auto flakeFiles = mkFlakeFiles(store, *acc);
-        input2.attrs = wrapAttrs(input2.attrs);
-        return {make_ref<OverlayAccessor>(makeStorePathAccessor(store, flakeFiles), acc), input2};
+        auto [nested, ours] = splitAttrs(input.attrs);
+        auto input2 = Input::fromAttrs(std::move(nested));
+        auto [acc, input3] = input2.getAccessor(store);
+        auto flakeFiles = mkFlakeFiles(store, input, *acc);
+        input3.attrs = mergeAttrs(input3.attrs, ours);
+        return {make_ref<OverlayAccessor>(makeStorePathAccessor(store, flakeFiles), acc), input3};
     }
 };
 
