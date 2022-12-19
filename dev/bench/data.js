@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1671472444250,
+  "lastUpdate": 1671484600689,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -1888,6 +1888,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "No-op rebuild",
             "value": "0.49",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "c06eeba86f0cc83ee9856a4d9b16699d88c69697",
+          "message": "choose a benchmark file that does not import `Lean`",
+          "timestamp": "2022-12-19T18:41:11+01:00",
+          "tree_id": "b9224391ee7e1e6c68fa858c064677177357ccbd",
+          "url": "https://github.com/Kha/nale/commit/c06eeba86f0cc83ee9856a4d9b16699d88c69697"
+        },
+        "date": 1671484600283,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "20.77",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "202",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.50",
             "unit": "s"
           },
           {
