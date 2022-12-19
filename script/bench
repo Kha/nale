@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 source "$(dirname "${BASH_SOURCE}")"/common.sh
-args="Mathlib.mods.\"Mathlib.Tactic.ToAdditive\" --override-input lean github:leanprover/lean4/adf7438 --override-input std nale+github:leanprover/std4/5c8ff9a"
+args="#Std --override-input lean github:leanprover/lean4/adf7438"
 
-bench "Initial build" nix-portable nix build nale+git+file:$PWD#$args
-bench "No-op rebuild" nix-portable nix build nale+git+file:$PWD#$args
+bench "Initial build" nix-portable nix build nale+git+file:$PWD$args
+bench "No-op rebuild" nix-portable nix build nale+git+file:$PWD$args
 echo >> README.md
-bench "Rebuild after unrelated change" nix-portable nix build nale+git+file:$PWD#$args
-bench "URL build" nix-portable nix build nale+github:leanprover-community/mathlib4/$commit#$args
+bench "Rebuild after unrelated change" nix-portable nix build nale+git+file:$PWD$args
+bench "URL build" nix-portable nix build nale+github:leanprover/std4/$commit$args
 
 toJson
