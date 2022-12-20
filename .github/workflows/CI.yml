@@ -2,7 +2,7 @@ name: "CI"
 on:
   push:
     branches:
-      - master
+      - '*'
     tags:
       - '*'
   pull_request:
@@ -47,8 +47,8 @@ jobs:
       id: build
       run: |
         nix flake lock --update-input lake2nix  # HACK
-        nix run .#nix -- build ./lake2nix -o push
         nix build .
+        nix run .#nix -- build ./lake2nix $(cat bench-lean)#{lean,leanc,lean-all,Lean.oTree,iTree,modDepsFiles,Leanc.src,depRoots} -o push
       shell: nix run .#ciShell -- bash -euxo pipefail {0}
     - name: Push to Cachix
       run: |
