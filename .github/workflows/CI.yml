@@ -24,9 +24,10 @@ jobs:
       uses: actions/cache@v3
       with:
         path: nix-store-cache
-        key: nix-store-cache-${{ github.sha }}
+        key: nix-store-cache-${{ github.ref_name }}-${{ github.sha }}
         # fall back to (latest) previous cache
         restore-keys: |
+          nix-store-cache-${{ github.ref_name }}
           nix-store-cache
     - run: |
         cp -r nix-store-cache nix-store-cache-copy || true
