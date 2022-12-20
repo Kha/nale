@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source "$(dirname "${BASH_SOURCE}")"/common.sh
-args="#Std --override-input lean github:leanprover/lean4/adf7438"
+args="#Std --override-input lean github:Kha/lean4/genClosure"
 
 bench "Initial build" nix-portable nix build nale+git+file:$PWD$args
 bench "No-op rebuild" nix-portable nix build nale+git+file:$PWD$args
