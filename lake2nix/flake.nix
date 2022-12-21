@@ -37,6 +37,7 @@
           linkFlags =
             lib.optional (!stdenv.hostPlatform.isWindows && config.supportInterpreter or false) "-rdynamic" ++
             config.moreLinkArgs;
+          overrideBuildModAttrs = { __contentAddressed = true; };
         };
         lakeRepo2pkgs = { src, leanPkgs ? leanPkgs, deps ? [] }: let
           json = runCommandNoCC "${src}-config" {} ''
