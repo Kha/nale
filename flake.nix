@@ -19,7 +19,7 @@
           c++ -shared -o $out/nale.so ${./nale.cc} -std=c++17 -I ${nix.dev}/include/nix -O2
         '';
         nix-nale = writeShellScriptBin "nix" ''
-          NIX_USER_CONF_FILES= \
+          NIX_USER_CONF_FILES=~/.nix-portable/nix.conf \
           NALE_NIX_SELF=$BASH_SOURCE \
           NALE_LAKE2NIX=''${NALE_LAKE2NIX:-'github:Kha/nale/${ inputs.lake2nix.rev }?dir=lake2nix'} \
           exec ''${NALE_NIX_PREFIX:-} ''${NALE_NIX:-${nix}/bin/"$(basename "$0")"} \

@@ -46,7 +46,7 @@ jobs:
     - name: Build
       id: build
       run: |
-        nix flake lock --update-input lake2nix  # HACK
+        nix flake lock --update-input lake2nix --option access-tokens github.com=${{ secrets.GITHUB_TOKEN }}  # HACK
         nix run .#nix -- build ./lake2nix -o push
         nix build .
       shell: nix run .#ciShell -- bash -euxo pipefail {0}
@@ -122,6 +122,8 @@ jobs:
       - name: Chore
         run: |
           chmod u+x nale-bin/nale-bin/nix-portable
+          mkdir ~/.nix-portable
+          echo "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}" >> ~/.nix-portable/nix.conf
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
