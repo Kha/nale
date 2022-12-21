@@ -20,7 +20,7 @@ toJson() {
     flatten' < $root/times.csv > $root/times.json
 }
 
-commit=5c8ff9a
+commit=2ace3a9
 git clone https://github.com/leanprover/std4 || git -C std4 fetch
 cd std4
 git checkout $commit

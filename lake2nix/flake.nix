@@ -2,7 +2,7 @@
   description = "Convert Lean projects using Lake to Nix derivations";
 
   inputs.lean.url = github:leanprover/lean4;
-  inputs.lake.url = github:leanprover/lake;
+  inputs.lake.url = github:leanprover/lake/lean4-master;
   inputs.lake.flake = false;
 
   outputs = { self, lean, lake, flake-utils }: let
