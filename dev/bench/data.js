@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1671662015967,
+  "lastUpdate": 1671726076541,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -1353,6 +1353,90 @@ window.BENCHMARK_DATA = {
           {
             "name": "URL build",
             "value": "2.21",
+            "unit": "s"
+          },
+          {
+            "name": "URL build [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "URL build [disk]",
+            "value": "1",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "d3450f23c7d3b6f6c7af8eb49c0178943dc5b4f4",
+          "message": "update lake2nix",
+          "timestamp": "2022-12-21T23:26:41+01:00",
+          "tree_id": "f580a848f38ac3e6402a5804c92364977f2fb06b",
+          "url": "https://github.com/Kha/nale/commit/d3450f23c7d3b6f6c7af8eb49c0178943dc5b4f4"
+        },
+        "date": 1671726075986,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "156.86",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "179",
+            "unit": "MB"
+          },
+          {
+            "name": "Initial build [disk]",
+            "value": "1341",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.33",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild [disk]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "Rebuild after unrelated change",
+            "value": "2.76",
+            "unit": "s"
+          },
+          {
+            "name": "Rebuild after unrelated change [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "Rebuild after unrelated change [disk]",
+            "value": "1",
+            "unit": "MB"
+          },
+          {
+            "name": "URL build",
+            "value": "2.22",
             "unit": "s"
           },
           {
