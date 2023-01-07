@@ -77,7 +77,7 @@ jobs:
           echo $PWD/nale-bin/nale-bin >> $GITHUB_PATH
       - name: Bench
         shell: nix-portable nix run .#ciShell -- bash -euxo pipefail {0}
-        run: ./script/bench
+        run: CI=1 ./script/bench
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
         with:
