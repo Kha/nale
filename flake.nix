@@ -29,6 +29,7 @@
         nix-nale-bundle = symlinkJoin { name = "nix-nale-bundle"; paths = [ nix-nale nix ]; };
         nix-nale-portable = inputs.nix-portable.packages.${system}.nix-portable.override {
           nix = nix-nale-bundle;
+          tryUseSandbox = false;
           extraNixConf = ''
             max-jobs = auto
             keep-outputs = true
