@@ -39,8 +39,9 @@
             config.moreLinkArgs;
         };
         lakeRepo2pkgs = { src, leanPkgs ? leanPkgs, deps ? [] }: let
-          json = runCommandNoCC "${src}-config" {} ''
-            ${lake-export}/bin/lake-export ${src} > $out
+          lake-src = builtins.filterSource (e: _: baseNameOf e == "lakefile.lean" || baseNameOf e == "lake-manifest.json") src;
+          json = runCommandNoCC "lake-export-json" {} ''
+            ${lake-export}/bin/lake-export ${lake-src} > $out
           '';
           root = builtins.traceVerbose "loading Lake config from ${json}"
             (builtins.fromJSON (builtins.readFile json)).root;
