@@ -6,7 +6,7 @@ args="#Std --override-input lean github:leanprover/lean4/74b3d10"
 bench "Initial build" bash -c "
   # Simulate downloading binary. Not necessarily the same size as the artifact, but close enough.
   [ -z '$CI' ] || curl -sL https://github.com/Kha/nale/releases/latest/download/nix-portable > /dev/null
-  nix-portable nix build nale+git+file:$PWD$args"
+  NP_DEBUG=1 nix-portable nix build nale+git+file:$PWD$args"
 bench "No-op rebuild" nix-portable nix build nale+git+file:$PWD$args
 echo >> README.md
 bench "Rebuild after unrelated change" nix-portable nix build nale+git+file:$PWD$args

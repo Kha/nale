@@ -75,9 +75,12 @@ jobs:
         run: |
           chmod u+x nale-bin/nale-bin/nix-portable
           echo $PWD/nale-bin/nale-bin >> $GITHUB_PATH
+          mkdir ~/.nix-portable
+          echo "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}" >> ~/.nix-portable/nix.conf
+          sudo apt install moreutils
       - name: Bench
-        shell: nix-portable nix run .#ciShell -- bash -euxo pipefail {0}
-        run: CI=1 ./script/bench
+        shell: bash -euxo pipefail {0}
+        run: CI=1 ./script/bench |& ts -i "(%.S)]" | ts -s "[%M:%S"
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
         with:
@@ -92,16 +95,11 @@ jobs:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
-        with:
-          path: nale-bin
       - name: Setup
-        run: |
-          chmod u+x nale-bin/nale-bin/nix-portable
-          echo $PWD/nale-bin/nale-bin >> $GITHUB_PATH
+        run: sudo apt install moreutils
       - name: Bench
-        shell: nix-portable nix run .#ciShell -- bash -euxo pipefail {0}
-        run: ./script/bench-reference
+        shell: bash -euxo pipefail {0}
+        run: ./script/bench-reference |& ts -i "(%.S)]" | ts -s "[%M:%S"
       - name: Store reference result
         uses: benchmark-action/github-action-benchmark@v1
         with:
@@ -122,8 +120,6 @@ jobs:
       - name: Chore
         run: |
           chmod u+x nale-bin/nale-bin/nix-portable
-          mkdir ~/.nix-portable
-          echo "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}" >> ~/.nix-portable/nix.conf
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
