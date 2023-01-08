@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1673200517465,
+  "lastUpdate": 1673215869994,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -2947,6 +2947,60 @@ window.BENCHMARK_DATA = {
           {
             "name": "No-op rebuild",
             "value": "0.40",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild [disk]",
+            "value": "0",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "57b9bf6f51becf0375963344824891b91007066c",
+          "message": "update nix-portable to disable sandbox",
+          "timestamp": "2023-01-08T23:05:12+01:00",
+          "tree_id": "995f27856988b90c8faa7deaa5740783a609877f",
+          "url": "https://github.com/Kha/nale/commit/57b9bf6f51becf0375963344824891b91007066c"
+        },
+        "date": 1673215869567,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "80.72",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "200",
+            "unit": "MB"
+          },
+          {
+            "name": "Initial build [disk]",
+            "value": "957",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.39",
             "unit": "s"
           },
           {
