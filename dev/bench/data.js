@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1673179622608,
+  "lastUpdate": 1673200392623,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -2809,6 +2809,60 @@ window.BENCHMARK_DATA = {
           {
             "name": "No-op rebuild",
             "value": "0.50",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild [disk]",
+            "value": "0",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": false,
+          "id": "dc8c31f739cdd23956511fe81ddf24a622252530",
+          "message": "to be fair, include nix-portable setup in benchmark",
+          "timestamp": "2023-01-08T16:45:30+01:00",
+          "tree_id": "6793c181ce01cbaf500cdc7dd0cbe4adb8623520",
+          "url": "https://github.com/Kha/nale/commit/dc8c31f739cdd23956511fe81ddf24a622252530"
+        },
+        "date": 1673200392185,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "77.91",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "200",
+            "unit": "MB"
+          },
+          {
+            "name": "Initial build [disk]",
+            "value": "957",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.40",
             "unit": "s"
           },
           {
