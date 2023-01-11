@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1673215954164,
+  "lastUpdate": 1673445532864,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -3070,6 +3070,60 @@ window.BENCHMARK_DATA = {
           {
             "name": "Initial build",
             "value": "80.72",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "200",
+            "unit": "MB"
+          },
+          {
+            "name": "Initial build [disk]",
+            "value": "957",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.39",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild [disk]",
+            "value": "0",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "4868996c19b6d42148e6d8b3d069a06d77b1f308",
+          "message": "accept dependencies without lean-version (i.e. Lake)",
+          "timestamp": "2023-01-11T14:38:45+01:00",
+          "tree_id": "f32c3d3e11135ac5b45c90c37b2f0e4c3202515b",
+          "url": "https://github.com/Kha/nale/commit/4868996c19b6d42148e6d8b3d069a06d77b1f308"
+        },
+        "date": 1673445531868,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "83.46",
             "unit": "s"
           },
           {
