@@ -169,7 +169,8 @@ struct NaleInputScheme : InputScheme
     {
         auto manifest = acc.pathExists(CanonPath("/lake-manifest.json")) ? acc.readFile(CanonPath("/lake-manifest.json")) : "";
         auto lakefile = acc.readFile(CanonPath("/lakefile.lean"));
-        auto leanVersion = maybeGetStrAttr(input.attrs, "leanVersion").value_or(chomp(acc.readFile(CanonPath("/lean-toolchain"))));
+        auto leanVersionAttr = maybeGetStrAttr(input.attrs, "leanVersion");
+        auto leanVersion = leanVersionAttr ? *leanVersionAttr : chomp(acc.readFile(CanonPath("/lean-toolchain")));
         Attrs lockedAttrs;
         lockedAttrs["manifest"] = manifest;
         lockedAttrs["lakefile"] = lakefile;
