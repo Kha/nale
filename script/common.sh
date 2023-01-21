@@ -8,7 +8,7 @@ bench() {
   \time -f "$1,%e,%M" -ao $root/times.csv "${@:2}"
   bytes2=$(ifconfig | sed -En 's/RX.*bytes ([0-9]+).*/\1/p' | sort -rn | head -n1)
   fsmb2=$(du -sm ~ | cut -f1)
-  mb=$(( (bytes2-bytes) / 1000000 ))
+  mb=$(python3 -c "print(($bytes2-$bytes) / 1000000)")
   fsdelta=$((fsmb2-fsmb))
   sed -i "\$s/\$/,$mb,$fsdelta/" $root/times.csv
 }
