@@ -19,6 +19,12 @@ toJson() {
      {"name": "\($input[0]) [disk]", "unit": "MB", "value": $input[4] }]] |
     flatten' < $root/times.csv > $root/times.json
 }
+change_commit() {
+  git checkout @^
+}
+change_lean() {
+  git checkout $(git log --oneline @ lean-toolchain | head -n1 | cut -f1 -d' ')^
+}
 
 commit=5770b60
 git clone https://github.com/leanprover/std4 || git -C std4 fetch

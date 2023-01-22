@@ -5,5 +5,9 @@ export PATH=~/.elan/bin:$PATH
 
 bench "Initial build" bash -c 'curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none && lake build Std'
 bench "No-op rebuild" lake build Std
+change_commit
+bench "Build different commit" lake build Std
+change_lean
+bench "Build after Lean change" lake build Std
 
 toJson

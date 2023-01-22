@@ -11,5 +11,9 @@ bench "No-op rebuild" nix-portable nix build nale+git+file:$PWD$args
 echo >> README.md
 bench "Rebuild after unrelated change" nix-portable nix build nale+git+file:$PWD$args
 bench "URL build" nix-portable nix build nale+github:leanprover/std4/$commit$args
+change_commit
+bench "Build different commit" nix-portable nix build nale+git+file:$PWD$args
+change_lean
+bench "Build after Lean change" nix-portable nix build nale+git+file:$PWD$args
 
 toJson
