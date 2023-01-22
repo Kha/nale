@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1674310337425,
+  "lastUpdate": 1674404681220,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -3371,6 +3371,90 @@ window.BENCHMARK_DATA = {
           {
             "name": "No-op rebuild [disk]",
             "value": "0",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "759e1bd6166a59eb29e91c0ae58242a7ecc9ba0e",
+          "message": "bench: after changes",
+          "timestamp": "2023-01-22T17:17:33+01:00",
+          "tree_id": "62b4e6e562ad3d66ba434c7bdd3dd6e06daf4974",
+          "url": "https://github.com/Kha/nale/commit/759e1bd6166a59eb29e91c0ae58242a7ecc9ba0e"
+        },
+        "date": 1674404680750,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "81.34",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "202.383352",
+            "unit": "MB"
+          },
+          {
+            "name": "Initial build [disk]",
+            "value": "969",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.40",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0.0",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild [disk]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "Build different commit",
+            "value": "19.51",
+            "unit": "s"
+          },
+          {
+            "name": "Build different commit [RX]",
+            "value": "0.014087",
+            "unit": "MB"
+          },
+          {
+            "name": "Build different commit [disk]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "Build after Lean change",
+            "value": "81.43",
+            "unit": "s"
+          },
+          {
+            "name": "Build after Lean change [RX]",
+            "value": "195.494797",
+            "unit": "MB"
+          },
+          {
+            "name": "Build after Lean change [disk]",
+            "value": "865",
             "unit": "MB"
           }
         ]
