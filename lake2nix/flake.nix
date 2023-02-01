@@ -61,12 +61,21 @@
   in
     outs // {
       lib.lakeRepo2flake = { src, leanPkgs ? lean.packages, depFlakes ? [] }:
-        flake-utils.lib.eachDefaultSystem (system: rec {
-          packages = outs.packages.${system}.lakeRepo2pkgs {
-            inherit src;
-            deps = builtins.concatMap (flake: flake.packages.${system}.deps) depFlakes;
-            leanPkgs = leanPkgs.${system};
+        flake-utils.lib.eachDefaultSystem (system:
+          let flake = {
+            packages = outs.packages.${system}.lakeRepo2pkgs {
+              inherit src;
+              deps = builtins.concatMap (flake: flake.packages.${system}.deps) depFlakes;
+              leanPkgs = leanPkgs.${system};
+            };
           };
-        });
+          in
+            if builtins.pathExists (src + "/nale.nix") then
+              let flake' = leanPkgs.${system}.nixpkgs.lib.makeExtensible (_: flake);
+                  extends = (import (src + "/nale.nix") { inherit system; }).extends or (_: _: {}); in
+                flake'.extend extends
+            else
+              flake
+        );
     };
 }
