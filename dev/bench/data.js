@@ -2626,50 +2626,6 @@ window.BENCHMARK_DATA = {
             "username": "Kha"
           },
           "distinct": true,
-          "id": "5d18d82ac48379ae477e67086eea4617249bcc3e",
-          "message": "bootstrap, already!?",
-          "timestamp": "2022-12-18T16:17:31+01:00",
-          "tree_id": "60a2f18bb542588d9b11b6e933a6a643bb062e28",
-          "url": "https://github.com/Kha/nale/commit/5d18d82ac48379ae477e67086eea4617249bcc3e"
-        },
-        "date": 1671377985768,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "Initial build",
-            "value": "64.02",
-            "unit": "s"
-          },
-          {
-            "name": "Initial build [RX]",
-            "value": "202",
-            "unit": "MB"
-          },
-          {
-            "name": "No-op rebuild",
-            "value": "0.63",
-            "unit": "s"
-          },
-          {
-            "name": "No-op rebuild [RX]",
-            "value": "0",
-            "unit": "MB"
-          }
-        ]
-      },
-      {
-        "commit": {
-          "author": {
-            "email": "sebasti@nullri.ch",
-            "name": "Sebastian Ullrich",
-            "username": "Kha"
-          },
-          "committer": {
-            "email": "sebasti@nullri.ch",
-            "name": "Sebastian Ullrich",
-            "username": "Kha"
-          },
-          "distinct": true,
           "id": "5026e4d58244f56586ff213b9d70fb3e12af9800",
           "message": "downgrade multiplexing again, too many open files",
           "timestamp": "2022-12-18T16:24:15+01:00",
@@ -2912,50 +2868,6 @@ window.BENCHMARK_DATA = {
           {
             "name": "No-op rebuild",
             "value": "0.41",
-            "unit": "s"
-          },
-          {
-            "name": "No-op rebuild [RX]",
-            "value": "0",
-            "unit": "MB"
-          }
-        ]
-      },
-      {
-        "commit": {
-          "author": {
-            "email": "sebasti@nullri.ch",
-            "name": "Sebastian Ullrich",
-            "username": "Kha"
-          },
-          "committer": {
-            "email": "sebasti@nullri.ch",
-            "name": "Sebastian Ullrich",
-            "username": "Kha"
-          },
-          "distinct": true,
-          "id": "fb96f9e830a8b247d4cee37ed071760b868d775f",
-          "message": "bootstrap, already!?",
-          "timestamp": "2022-12-20T18:53:18+01:00",
-          "tree_id": "bd0a90e3700c4308ef6cdca5dc5a0268daea97eb",
-          "url": "https://github.com/Kha/nale/commit/fb96f9e830a8b247d4cee37ed071760b868d775f"
-        },
-        "date": 1671559797069,
-        "tool": "customSmallerIsBetter",
-        "benches": [
-          {
-            "name": "Initial build",
-            "value": "113.88",
-            "unit": "s"
-          },
-          {
-            "name": "Initial build [RX]",
-            "value": "200",
-            "unit": "MB"
-          },
-          {
-            "name": "No-op rebuild",
-            "value": "0.50",
             "unit": "s"
           },
           {
