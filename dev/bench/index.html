@@ -129,7 +129,7 @@
         function init() {
           function collectBenchesPerTestCase(entries) {
             const map = new Map();
-            for (const entry of entries) {
+            for (const entry of entries.reverse()) {
               const {commit, date, tool, benches} = entry;
               for (const bench of benches) {
                 const result = { commit, date, tool, bench };
@@ -264,7 +264,7 @@
             setElem.appendChild(graphsElem);
 
             for (const [benchName, benches] of benchSet.entries()) {
-              renderGraph(graphsElem, benchName, benches)
+              renderGraph(graphsElem, benchName, benches.reverse())
             }
           }
 
