@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1689347910964,
+  "lastUpdate": 1689351286051,
   "repoUrl": "https://github.com/Kha/nale",
   "entries": {
     "Benchmark": [
@@ -2659,6 +2659,120 @@ window.BENCHMARK_DATA = {
           {
             "name": "Build after Lean change [disk]",
             "value": "811",
+            "unit": "MB"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "committer": {
+            "email": "sebasti@nullri.ch",
+            "name": "Sebastian Ullrich",
+            "username": "Kha"
+          },
+          "distinct": true,
+          "id": "5dacb31734674ecdf8a51d29deea9bdbeb288aae",
+          "message": "Revert \"CI: enable PR bench summary\"\n\nThis reverts commit be7df836bbe3035e9ddfdfb4f2c96c329d04ffca.",
+          "timestamp": "2023-07-14T16:02:22+02:00",
+          "tree_id": "b6e078ac81ecbaccb3947f28239530e4fe37dc75",
+          "url": "https://github.com/Kha/nale/commit/5dacb31734674ecdf8a51d29deea9bdbeb288aae"
+        },
+        "date": 1689351285584,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Initial build",
+            "value": "2122.86",
+            "unit": "s"
+          },
+          {
+            "name": "Initial build [RX]",
+            "value": "495.203537",
+            "unit": "MB"
+          },
+          {
+            "name": "Initial build [disk]",
+            "value": "4798",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild",
+            "value": "0.35",
+            "unit": "s"
+          },
+          {
+            "name": "No-op rebuild [RX]",
+            "value": "0.0",
+            "unit": "MB"
+          },
+          {
+            "name": "No-op rebuild [disk]",
+            "value": "0",
+            "unit": "MB"
+          },
+          {
+            "name": "Rebuild after unrelated change",
+            "value": "1.92",
+            "unit": "s"
+          },
+          {
+            "name": "Rebuild after unrelated change [RX]",
+            "value": "0.003767",
+            "unit": "MB"
+          },
+          {
+            "name": "Rebuild after unrelated change [disk]",
+            "value": "1",
+            "unit": "MB"
+          },
+          {
+            "name": "URL build",
+            "value": "2.35",
+            "unit": "s"
+          },
+          {
+            "name": "URL build [RX]",
+            "value": "0.331167",
+            "unit": "MB"
+          },
+          {
+            "name": "URL build [disk]",
+            "value": "1",
+            "unit": "MB"
+          },
+          {
+            "name": "Build different commit",
+            "value": "27.94",
+            "unit": "s"
+          },
+          {
+            "name": "Build different commit [RX]",
+            "value": "0.061705",
+            "unit": "MB"
+          },
+          {
+            "name": "Build different commit [disk]",
+            "value": "41",
+            "unit": "MB"
+          },
+          {
+            "name": "Build after Lean change",
+            "value": "1401.51",
+            "unit": "s"
+          },
+          {
+            "name": "Build after Lean change [RX]",
+            "value": "55.809422",
+            "unit": "MB"
+          },
+          {
+            "name": "Build after Lean change [disk]",
+            "value": "1653",
             "unit": "MB"
           }
         ]
