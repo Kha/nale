@@ -84,6 +84,10 @@ struct NaleInputScheme : InputScheme
             ours["leanVersion"] = attrs["leanVersion"];
             attrs.erase("leanVersion");
         }
+        if (attrs.count("name")) {
+            ours["name"] = attrs["name"];
+            attrs.erase("name");
+        }
         return {attrs, ours};
     }
 
@@ -99,6 +103,10 @@ struct NaleInputScheme : InputScheme
         if (url2.query.count("leanVersion")) {
             ours.insert_or_assign("leanVersion", url2.query["leanVersion"]);
             url2.query.erase("leanVersion");
+        }
+        if (url2.query.count("name")) {
+            ours.insert_or_assign("name", url2.query["name"]);
+            url2.query.erase("name");
         }
         auto input = Input::fromURL(url2);
         input.attrs = mergeAttrs(input.attrs, ours);
@@ -170,6 +178,7 @@ struct NaleInputScheme : InputScheme
         auto manifest = acc.pathExists(CanonPath("/lake-manifest.json")) ? acc.readFile(CanonPath("/lake-manifest.json")) : "";
         auto lakefile = acc.readFile(CanonPath("/lakefile.lean"));
         auto leanVersionAttr = maybeGetStrAttr(input.attrs, "leanVersion");
+        auto pkgName = maybeGetStrAttr(input.attrs, "name").value_or("root");
         auto leanVersion = leanVersionAttr ? *leanVersionAttr : chomp(acc.readFile(CanonPath("/lean-toolchain")));
         Attrs lockedAttrs;
         lockedAttrs["manifest"] = manifest;
@@ -212,13 +221,17 @@ struct NaleInputScheme : InputScheme
                 pkg = pkg["git"];
                 std::string name = pkg["name"];
                 std::string rev = pkg["rev"];
-                std::string url = "git:";
+                std::string url = "git+";
                 url += pkg["url"];
-                std::string prefix = "git:https://github.com/";
+                std::string prefix = "git+https://github.com/";
                 if (url.compare(0, prefix.size(), prefix) == 0) {
                     url.replace(0, prefix.size(), "github:");
+                    auto idx = url.find(".git");
+                    if (idx != std::string::npos) {
+                        url.replace(idx, std::string(".git").size(), "");
+                    }
                 }
-                depInputs += (format("  inputs.%1%.url = nale+%2%/%3%?leanVersion=%4%;\n  inputs.%1%.inputs.lean.follows = \"lean\";\n") %
+                depInputs += (format("  inputs.%1%.url = nale+%2%/%3%?leanVersion=%4%&name=%1%;\n  inputs.%1%.inputs.lean.follows = \"lean\";\n") %
                     name % url % rev % leanVersion).str();
                 deps += (format("inputs.%1% ") % name).str();
             }
@@ -227,8 +240,8 @@ struct NaleInputScheme : InputScheme
   inputs.lean.url = github:%1%;
   inputs.lake2nix.url = %2%;
 %3%
-  outputs = inputs: inputs.lake2nix.lib.lakeRepo2flake { src = ./.; leanPkgs = inputs.lean.packages; depFlakes = [ %4% ]; };
-})") % leanVersion % getEnv("NALE_LAKE2NIX").value() % depInputs % deps;
+  outputs = inputs: inputs.lake2nix.lib.lakeRepo2flake { name = "%5%"; src = ./.; inherit (inputs) lean; depFlakes = [ %4% ]; };
+})") % leanVersion % getEnv("NALE_LAKE2NIX").value() % depInputs % deps % pkgName;
         writeFile(tmpDir + "/flake.nix", flakeContents.str());
         // creating new EvalState segfaults?
         //auto state = std::shared_ptr<EvalState>(new EvalState({}, store));
