@@ -187,8 +187,9 @@ struct NaleInputScheme : InputScheme
         lockedAttrs["naleVersion"] = naleVersion;
         lockedAttrs["lake2nixVersion"] = getEnv("NALE_LAKE2NIX").value();
 
-        if (auto res = getCache()->lookup(store, lockedAttrs))
-            return std::move(res->second);
+        if (!getEnv("NALE_LAKE2NIX"))
+            if (auto res = getCache()->lookup(store, lockedAttrs))
+                return std::move(res->second);
 
         Path tmpDir = createTempDir();
         AutoDelete delTmpDir(tmpDir, true);
