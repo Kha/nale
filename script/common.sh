@@ -26,7 +26,7 @@ change_lean() {
   git checkout $(git log --oneline @ lean-toolchain | head -n1 | cut -f1 -d' ')^
 }
 
-commit=5770b60
+commit=e66ec40
 git clone https://github.com/leanprover/std4 || git -C std4 fetch
 cd std4
 git checkout $commit
